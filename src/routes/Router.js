@@ -3,6 +3,10 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import Home from "../pages/Home/Home";
 import Profile from "../pages/Profile/Profile";
 import Icon from 'react-native-vector-icons/Ionicons';
+import { useState } from "react";
+import Login from "../pages/Login/Login";
+import Register from "../pages/Register/Register";
+import VerifyOTP from "../pages/VerifyOTP/VerifyOTP";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -46,7 +50,35 @@ function HomeTabs() {
     );
 }
 
-export default function Router() {
+const LoginStack = () => {
+    return (
+        <Stack.Navigator>
+            <Stack.Screen
+                name="Login"
+                component={Login}
+                options={{
+                    headerShown: false,
+                }}
+            />
+            <Stack.Screen
+                name="Register"
+                component={Register}
+                options={{
+                    headerShown: false,
+                }}
+            />
+            <Stack.Screen
+                name="VerifyOTP"
+                component={VerifyOTP}
+                options={{
+                    headerShown: false,
+                }}
+            />
+        </Stack.Navigator>
+    );
+}
+
+const HomeStack = () => {
     return (
         <Stack.Navigator>
             <Stack.Screen
@@ -58,4 +90,14 @@ export default function Router() {
             />
         </Stack.Navigator>
     );
+}
+
+export default function Router() {
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+    if (isLoggedIn) {
+        return <HomeStack />;
+    } else {
+        return <LoginStack />;
+    }
 }
