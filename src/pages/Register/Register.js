@@ -5,11 +5,15 @@ import { useState } from "react";
 import { commonStyles } from "@/constants/styles";
 import { platform } from "@/constants/constants";
 import { useDispatch } from "react-redux";
+import { register } from "@/redux/reducers/authReducer";
+import Loader from "@/components/Loader/Loader";
+import { showToast } from "@/constants/constants";
 
 export default function Register({ navigation }) {
 
     const dispatch = useDispatch();
 
+    const [iSLoading, setIsLoading] = useState(false);
     const [isPasswordVisible, setIsPasswordVisible] = useState(false);
     const [isConfirmPasswordVisible, setIsConfirmPasswordVisible] = useState(false);
     const [formData, setFormData] = useState({
@@ -99,8 +103,43 @@ export default function Register({ navigation }) {
         } else {
             // console.log('Form submitted successfully');
 
+            setIsLoading(true);
+
+            dispatch(register(formData))
+                .then((res) => {
+                    console.log('Response in .then of dispatch ==> ', res);
+
+                    if (res.type === 'auth/register/fulfilled') {
+                        // showToast('success', res.payload);
+                        // console.log('Success');
+                        if (res.payload.next === 'verifyOTP') {
+                            navigation.navigate('VerifyOTP');
+                        } else if (res.payload.next === 'login') {
+                            navigation.navigate('Login');
+                        }
+
+                    } else {
+                        // console.log('Error');
+                        // showToast('error', res.payload);
+                    }
+
+                })
+                .catch((err) => {
+                    // console.log('Error ==> ', err);
+                })
+                .finally(() => {
+                    // console.log('Finally');
+                    setIsLoading(false);
+                });
+
         }
     };
+
+    if (iSLoading) {
+        return (
+            <Loader />
+        );
+    }
 
 
     return (

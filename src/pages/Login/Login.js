@@ -4,8 +4,13 @@ import { FormInput } from "react-native-formtastic";
 import { useState } from "react";
 import { commonStyles } from "@/constants/styles";
 import { platform } from "@/constants/constants";
+import { login } from "../../redux/reducers/authReducer";
+import { useDispatch } from "react-redux";
+import Loader from "../../components/Loader/Loader";
 
 export default function Login({ navigation }) {
+    const dispatch = useDispatch();
+    const [isLoading, setIsLoading] = useState(false);
     const [isPasswordVisible, setIsPasswordVisible] = useState(false);
     const [formData, setFormData] = useState({
         email: "",
@@ -49,8 +54,41 @@ export default function Login({ navigation }) {
             return;
         } else {
             // console.log('Form submitted successfully');
+
+            setIsLoading(true);
+
+            dispatch(login(formData))
+                .then((res) => {
+                    console.log('Response in .then of dispatch ==> ', res);
+
+                    if (res.type === 'auth/login/fulfilled') {
+                        // showToast('success', res.payload);
+                        // console.log('Success');
+                        if (res.payload.next === 'verifyOTP') {
+                            navigation.navigate('VerifyOTP');
+                        }
+
+                    } else {
+                        // console.log('Error');
+                        // showToast('error', res.payload);
+                    }
+
+                })
+                .catch((err) => {
+                    // console.log('Error ==> ', err);
+                })
+                .finally(() => {
+                    // console.log('Finally');
+                    setIsLoading(false);
+                });
         }
     };
+
+    if (isLoading) {
+        return (
+            <Loader />
+        );
+    }
 
 
     return (

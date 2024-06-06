@@ -1,10 +1,9 @@
-import { Text, View } from "react-native";
-import { styles } from "./Style";
+import { Conversation } from "../../components/Conversation/Conversation";
 
 export default function Home() {
+
+
     return (
-        <View style={styles.container}>
-            <Text style={styles.text}>Home Screen</Text>
-        </View>
+        <Conversation />
     );
 }

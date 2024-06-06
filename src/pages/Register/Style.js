@@ -7,7 +7,8 @@ export const styles = StyleSheet.create({
         flex: 1,
         justifyContent: "center",
         alignItems: "center",
-        height: deviceHeight,
+        paddingVertical: 20,
+        minHeight: deviceHeight,
     },
     title: {
         fontSize: H1,
