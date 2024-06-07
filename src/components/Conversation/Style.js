@@ -27,14 +27,14 @@ export const styles = StyleSheet.create({
         maxHeight: '10%',
         width: '80%',
         paddingTop: 30,
-        // backgroundColor: 'red',
+        backgroundColor: 'red',
     },
     chatArea: {
         flex: 1,
         height: '50%',
         width: '100%',
         padding: 10,
-        // backgroundColor: '#f5f5f5',
+        backgroundColor: 'blue',
         position: 'absolute',
         bottom: '10%',
     },
@@ -75,5 +75,18 @@ export const styles = StyleSheet.create({
     closeDrawerIcon: {
         fontSize: 30,
         color: colors.lightGray,
+    },
+    videoPlayerContainer: {
+        width: '100%',
+        height: deviceHeight / 3.7,
+        borderRadius: 5,
+        backgroundColor: colors.borderLightColor,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    videoPlayerStyle: {
+        height: '100%',
+        width: '96%',
+        // backgroundColor: 'black',
     },
 });

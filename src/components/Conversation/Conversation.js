@@ -15,6 +15,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { addConversation, addMessage, chatWithAI, clearConversations, selectConversation, selectMessages } from '../../redux/reducers/conversationReducer';
 import { colors } from '../../constants/colors';
 import Tts from 'react-native-tts';
+import VideoPlayer from '../VideoPlayer/VideoPlayer';
 
 export const Conversation = React.memo(({ navigation }) => {
 
@@ -312,6 +313,14 @@ export const Conversation = React.memo(({ navigation }) => {
             >
                 {speechRecContentArea}
             </ScrollView>
+
+            {/* Video Player */}
+            <View style={styles.videoPlayerContainer}>
+                <VideoPlayer
+                    videoPlayerStyle={styles.videoPlayerStyle}
+                />
+            </View>
+            {/* Video Player */}
 
             <ScrollView
                 ref={conversationScrollRef}
