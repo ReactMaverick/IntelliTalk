@@ -30,6 +30,16 @@ export const chatWithAI = createAsyncThunk('conversation/chatWithAI', async (dat
       })
     })
 
+    console.log('Request Body in async thunk ==> ', JSON.stringify({
+      model: 'gpt-3.5-turbo',
+      messages: [
+        ...messages,
+        userMessage
+      ],
+      temperature: 0.7,
+    })
+    );
+
     console.log('response in async thunk ==> ', response);
 
     if (!response.ok) {
@@ -64,13 +74,28 @@ const conversationSlice = createSlice({
   reducers: {
     addConversation: (state, action) => {
       state.conversations.push(action.payload);
+    },
+    addMessage: (state, action) => {
+      state.messages.push(action.payload);
+    },
+    clearConversations: state => {
+      state.conversations = [];
+      state.messages = [{
+        role: 'system',
+        content: 'You are a helpful assistant that can check grammar and provide training.'
+      }];
     }
   },
   extraReducers: builder => {
     builder.addCase(chatWithAI.fulfilled, (state, action) => {
-      console.log('Action payload ==> ', action.payload);
+      // console.log('Action payload ==> ', action.payload);
       state.conversations.push({
-        role: 'ai',
+        role: 'system',
+        content: action.payload
+      });
+
+      state.messages.push({
+        role: 'system',
         content: action.payload
       });
     });
@@ -85,6 +110,6 @@ const conversationSlice = createSlice({
 export const selectConversation = state => state.conversationReducer.conversations;
 export const selectMessages = state => state.conversationReducer.messages;
 
-export const { addConversation } = conversationSlice.actions;
+export const { addConversation, clearConversations, addMessage } = conversationSlice.actions;
 
 export default conversationSlice.reducer;

@@ -16,6 +16,7 @@ import {
 } from 'react-native-responsive-screen';
 import { deviceWidth } from "../constants/constants";
 import LinearGradient from "react-native-linear-gradient";
+import { colors } from "../constants/colors";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -28,8 +29,10 @@ function MyDrawer() {
         <Drawer.Navigator
             screenOptions={{
                 headerShown: false,
-                drawerType: deviceWidth >= 768 ? 'permanent' : 'front',
-                drawerStyle: deviceWidth >= 768 ? null : { width: '65%', backgroundColor: "#000" },
+                drawerType: 'front',
+                drawerStyle: {
+                    width: '65%'
+                },
             }}
             drawerContent={props => <CustomDrawerContent {...props} />}>
             <Drawer.Screen name="Home" component={Home} />
@@ -41,7 +44,13 @@ function MyDrawer() {
 const CustomDrawerContent = props => {
 
     return (
-        <DrawerContentScrollView {...props}>
+        <DrawerContentScrollView {...props}
+            contentContainerStyle={{
+                flex: 1,
+                justifyContent: 'center',
+                paddingTop: 0,
+            }}
+        >
             {/* <ImageBackground source={require('../assets/images/navMenu.png')} style={{
                 flex: 1,
                 height: hp('100%')
@@ -53,7 +62,21 @@ const CustomDrawerContent = props => {
                 end={{ x: 1, y: 0 }}
                 style={styles.gradientOverlay}
             >
+
                 <View style={{ alignItems: "flex-start", marginLeft: wp("5%") }}>
+                    <TouchableOpacity
+                        style={styles.avatarContainer}
+                        onPress={() => {
+                            props.navigation.navigate('Profile');
+                            props.navigation.closeDrawer();
+                        }}
+                    >
+                        <Image
+                            source={require('../assets/images/profileAvatar.png')}
+                            style={styles.avatarStyle}
+                        />
+                        <Text style={styles.textStyle}>John Doe</Text>
+                    </TouchableOpacity>
                     <TouchableOpacity
                         onPress={() => {
                             props.navigation.navigate('Home');
@@ -197,13 +220,17 @@ const styles = StyleSheet.create({
         borderColor: '#FFF',
         borderBottomWidth: 1,
     },
+    avatarContainer: {
+        justifyContent: 'center',
+    },
     avatarStyle: {
         width: 100,
         height: 100,
         marginTop: 10,
-        marginBottom: 15,
+        // marginBottom: 15,
         borderRadius: 50,
-        alignSelf: 'center',
+        backgroundColor: colors.lightBlue,
+
     },
     textStyle: {
         marginTop: 10,

@@ -10,7 +10,7 @@ const persistConfig = {
 };
 const rootReducer = combineReducers({
   authReducer: persistReducer(persistConfig, authReducer),
-  conversationReducer: conversationReducer,
+  conversationReducer: persistReducer(persistConfig, conversationReducer),
 });
 
 export const store = configureStore({

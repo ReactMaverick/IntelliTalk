@@ -14,7 +14,6 @@ export const styles = StyleSheet.create({
         fontWeight: "bold",
     },
     recognizedTextArea: {
-        // height: '50%',
         paddingTop: 30,
         backgroundColor: 'red',
     },

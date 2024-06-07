@@ -24,4 +24,13 @@
         </intent-filter>
       </activity>
     </application>
+
+    <!-- For Android 11 and above, add the following queries to the AndroidManifest.xml file: -->
+    <queries>
+    <!-- For using TTS -->
+        <intent>
+            <action android:name="android.intent.action.TTS_SERVICE" />
+        </intent>
+    </queries>
+    
 </manifest>

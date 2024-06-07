@@ -1,7 +1,8 @@
 import React, { useState, useCallback, useRef, useEffect, useMemo } from 'react';
-import { ScrollView, Alert, View } from 'react-native';
+import { ScrollView, Alert, View, TouchableOpacity } from 'react-native';
 import { RESULTS } from 'react-native-permissions';
 import { Text } from 'react-native-paper';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useSpeechRecognition } from 'react-native-voicebox-speech-rec';
 import { MicrophoneButton } from '../Microphone/MicrophoneButton';
@@ -10,21 +11,18 @@ import { showToast } from '../../constants/constants';
 import { useCheckSpeechRecPermissions, useRequestSpeechRecPermissions } from '../Microphone/speechRecPermissions';
 import { styles } from './Style';
 import LinearGradient from 'react-native-linear-gradient';
-import { OPENAI_API_KEY } from '../../common/common';
 import { useDispatch, useSelector } from 'react-redux';
-import { addConversation, chatWithAI, selectConversation, selectMessages } from '../../redux/reducers/conversationReducer';
+import { addConversation, addMessage, chatWithAI, clearConversations, selectConversation, selectMessages } from '../../redux/reducers/conversationReducer';
+import { colors } from '../../constants/colors';
+import Tts from 'react-native-tts';
 
-export const Conversation = React.memo(() => {
+export const Conversation = React.memo(({ navigation }) => {
 
     const dispatch = useDispatch();
 
     const conversations = useSelector(selectConversation);
 
     const messages = useSelector(selectMessages);
-
-    console.log('Conversations ==> ', conversations);
-
-    console.log('Messages ==> ', messages);
 
     const [chatMessages, setChatMessages] = useState([]);
     const [isInConversationMode, setIsInConversationMode] = useState(false);
@@ -48,9 +46,64 @@ export const Conversation = React.memo(() => {
 
     const conversationCancelledByUser = useRef(false);
 
+    const [voices, setVoices] = useState([]);
+    const [selectedVoice, setSelectedVoice] = useState(null);
+
     useEffect(() => {
+
+        // Initialize TTS
+        Tts.getInitStatus()
+            .then(() => {
+                initTts();
+            }, (err) => {
+                if (err.code === 'no_engine') {
+                    Tts.requestInstallEngine();
+                }
+            });
+        // Initialize TTS
+
+    }, []);
+
+    const initTts = async () => {
+        const voices = await Tts.voices();
+        const availableVoices = voices
+            .filter((voice) => !voice.networkConnectionRequired && !voice.notInstalled)
+            .map((voice) => {
+                return { id: voice.id, name: voice.name, language: voice.language };
+            });
+
+        const availableEnglishVoices = availableVoices.filter((voice) => voice.language === 'en-US');
+
+        console.log('Available English Voices ==> ', availableEnglishVoices);
+
+        let selectedVoice = null;
+
+        // console.log('Voices ==> ', voices);
+
+        if (availableEnglishVoices && availableEnglishVoices.length > 0) {
+            selectedVoice = availableEnglishVoices[0].id;
+
+            console.log('Selected Voice ==> ', selectedVoice);
+
+            // try {
+            //     await Tts.setDefaultLanguage(availableEnglishVoices[0].language);
+            // } catch (err) {
+            //     //Samsung S9 has always this error:
+            //     //"Language is not supported"
+            //     console.log(`setDefaultLanguage error `, err);
+            // }
+
+            await Tts.setDefaultVoice(availableEnglishVoices[0].id);
+            setVoices(availableEnglishVoices);
+            setSelectedVoice(selectedVoice);
+        }
+    };
+
+    useEffect(() => {
+        // dispatch(clearConversations());
+
         setSpeechRecStartedHandler(() => {
-            console.log('👆 Speech Recgnition Started!');
+            console.log('👆 Speech Recognition Started!');
         });
     }, [setSpeechRecStartedHandler]);
 
@@ -100,6 +153,11 @@ export const Conversation = React.memo(() => {
                         content: trimmedMessage
                     }))
 
+                    dispatch(addMessage({
+                        role: 'user',
+                        content: trimmedMessage
+                    }))
+
                     setTimeout(() => {
                         dispatch(chatWithAI({
                             messages,
@@ -108,48 +166,21 @@ export const Conversation = React.memo(() => {
                                 content: trimmedMessage
                             }
                         }))
+                            .then((response) => {
+                                console.log("Logic", response.type === 'conversation/chatWithAI/fulfilled');
+
+                                if (response.type === 'conversation/chatWithAI/fulfilled') {
+                                    const aiMessage = response.payload;
+
+                                    // console.log('TTs Status ==> ', ttsStatus);
+
+                                    Tts.stop();
+                                    Tts.speak(aiMessage);
+
+                                }
+                            })
                     }, 10);
 
-
-                    // const response = await fetch('https://api.openai.com/v1/chat/completions', {
-                    //     method: 'POST',
-                    //     headers: {
-                    //         'Content-Type': 'application/json',
-                    //         Authorization: `Bearer ${OPENAI_API_KEY}`,
-                    //     },
-                    //     body: JSON.stringify({
-                    //         model: 'gpt-3.5-turbo',
-                    //         messages: [
-                    //             {
-                    //                 role: 'system',
-                    //                 content: 'You are a helpful assistant that can check grammar and provide training.'
-                    //             },
-                    //             {
-                    //                 role: 'user',
-                    //                 content: trimmedMessage
-                    //             }
-                    //         ],
-                    //         temperature: 0.7,
-                    //     }),
-                    // });
-
-                    // console.log('Response from OpenAI: ', response);
-
-                    // if (!response.ok) {
-                    //     console.error('Failed to fetch response from OpenAI: ', response.statusText);
-                    //     return;
-                    // }
-
-                    // const data = await response.json();
-
-                    // // Add the AI's response to the chat messages
-                    // setChatMessages((prevMessages) => [
-                    //     ...prevMessages,
-                    //     {
-                    //         message: data.choices[0].message.content,
-                    //         sender: 'ai',
-                    //     },
-                    // ]);
                 } catch (error) {
                     console.error('Failed to fetch response from OpenAI: ', error);
                 }
@@ -172,6 +203,20 @@ export const Conversation = React.memo(() => {
             setUserMicPermissionGranted(permissionCheckResult === RESULTS.GRANTED);
         });
     }, [checkForPermission]);
+
+    // useEffect(() => {
+    //     if (conversations.length > 0) {
+    //         const lastMessage = conversations[conversations.length - 1];
+    //         if (lastMessage.role === 'system') {
+    //             console.log('AI Response ==> ', lastMessage.content);
+
+    //             if (ttsStatus === 'initialized') {
+    //                 Tts.stop();
+    //                 Tts.speak(lastMessage.content);
+    //             }
+    //         }
+    //     }
+    // }, [conversations]);
 
     const checkAndAskForPermission = useCallback(async () => {
         const permissionCheckResult = await checkForPermission();
@@ -225,17 +270,41 @@ export const Conversation = React.memo(() => {
         }
     }, [cancelSpeechRecognition, isInConversationMode]);
 
-    const scrollRef = React.useRef(null);
+    const scrollRef = useRef(null);
     const handleTextAreaSizeChange = useCallback(() => {
         scrollRef.current?.scrollToEnd({ animated: true });
     }, []);
 
+    const conversationScrollRef = useRef(null);
+    const handleConversationSizeChange = useCallback(() => {
+        conversationScrollRef.current?.scrollToEnd({ animated: true });
+    }, []);
+
     const speechRecContentArea = useMemo(() => {
-        return <Text variant="titleLarge">{speechContentRealTime}</Text>;
+        return <Text variant="bodyMedium">{speechContentRealTime}</Text>;
     }, [speechContentRealTime]);
 
     return (
         <SafeAreaView style={styles.container}>
+            {/* Drawer Close Icon */}
+            <View
+                style={styles.closeDrawer}
+            >
+                <TouchableOpacity
+                    onPress={() => {
+                        navigation.toggleDrawer();
+                    }}
+                    style={styles.closeDrawerButton}
+                >
+                    <Icon
+                        name="menu"
+                        type='MaterialIcons'
+                        style={styles.closeDrawerIcon}
+                    />
+                </TouchableOpacity>
+            </View>
+            {/* Drawer Close Icon */}
+
             <ScrollView
                 ref={scrollRef}
                 onContentSizeChange={handleTextAreaSizeChange}
@@ -245,7 +314,9 @@ export const Conversation = React.memo(() => {
             </ScrollView>
 
             <ScrollView
+                ref={conversationScrollRef}
                 style={styles.chatArea}
+                onContentSizeChange={handleConversationSizeChange}
                 showsVerticalScrollIndicator={false}
             >
                 {conversations.map((message, index) => (
@@ -253,7 +324,7 @@ export const Conversation = React.memo(() => {
                     { alignSelf: message.role === 'user' ? 'flex-end' : 'flex-start' }
                     ]}>
                         <Text style={styles.chatMessage}>
-                            <Text style={styles.chatUser}>{message.role}:</Text> {message.content}
+                            <Text style={styles.chatUser}>{message.role === 'user' ? 'You' : 'Assistant'}:</Text> {message.content}
                         </Text>
                     </View>
                 ))}

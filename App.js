@@ -8,6 +8,9 @@ import Router from './src/routes/Router';
 import { NavigationContainer } from '@react-navigation/native';
 import { SpeechRecognitionRootView } from 'react-native-voicebox-speech-rec';
 import { PaperProvider } from 'react-native-paper';
+import { LogBox } from 'react-native';
+
+LogBox.ignoreLogs(['new NativeEventEmitter']); // Ignore log notification by message
 
 export default function App() {
 

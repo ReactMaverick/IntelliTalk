@@ -20,6 +20,7 @@ export const colors = {
   borderDarkColor: '#9FADBE',
   checkIconColor: '#2ED297',
   gray: '#66717E',
+  lightGray: '#AEBBCC',
   placeholderColor: '#AEBBCC',
   screenBg: '#F6F8FC',
   borderLightColor: '#CDD8E7',
