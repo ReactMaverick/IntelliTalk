@@ -7,14 +7,23 @@ export default function VideoPlayer({ videoPlayerStyle, playVideo, pauseVideo })
     const aiVideo = require('../../assets/video/ai_female.mp4');
 
     useEffect(() => {
+        console.log('videoRef.current ==> ', videoRef.current);
         if (playVideo) {
+            if (!videoRef.current) {
+                return;
+            }
+
             const randomTime = Math.floor(Math.random() * 10) + 1;
             videoRef.current.seek(randomTime);
-            videoRef.current.play();
+            videoRef.current.resume();
         } else if (pauseVideo) {
+            if (!videoRef.current) {
+                return;
+            }
+
             videoRef.current.pause();
         }
-    }, [playVideo, pauseVideo]);
+    }, [playVideo, pauseVideo, videoRef]);
 
     const onBuffer = ({ isBuffering }) => {
         console.log("Is Buffering ==> ", isBuffering);

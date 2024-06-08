@@ -50,6 +50,8 @@ export const Conversation = React.memo(({ navigation }) => {
     const [voices, setVoices] = useState([]);
     const [selectedVoice, setSelectedVoice] = useState(null);
 
+    const [ttsStatus, setTtsStatus] = useState('initializing');
+
     useEffect(() => {
 
         // Initialize TTS
@@ -62,6 +64,21 @@ export const Conversation = React.memo(({ navigation }) => {
                 }
             });
         // Initialize TTS
+
+        Tts.addEventListener('tts-start', (event) => {
+            console.log('TTS Start ==> ', event);
+            setTtsStatus('started');
+        });
+
+        Tts.addEventListener('tts-finish', (event) => {
+            console.log('TTS Finish ==> ', event);
+            setTtsStatus('finished');
+        });
+
+        Tts.addEventListener('tts-cancel', (event) => {
+            console.log('TTS Cancel ==> ', event);
+            setTtsStatus('cancelled');
+        });
 
     }, []);
 
@@ -285,6 +302,24 @@ export const Conversation = React.memo(({ navigation }) => {
         return <Text variant="bodyMedium">{speechContentRealTime}</Text>;
     }, [speechContentRealTime]);
 
+    const getTtsStatus = useCallback((status) => {
+        console.log('Status ==> ', status, ttsStatus);
+        switch (status) {
+            case 'playVideo':
+                if (ttsStatus === 'started') {
+                    return true;
+                } else {
+                    return false;
+                }
+            case 'pauseVideo':
+                if (ttsStatus === 'finished' || ttsStatus === 'cancelled' || ttsStatus === 'initializing') {
+                    return true;
+                } else {
+                    return false;
+                }
+        }
+    });
+
     return (
         <SafeAreaView style={styles.container}>
             {/* Drawer Close Icon */}
@@ -318,6 +353,8 @@ export const Conversation = React.memo(({ navigation }) => {
             <View style={styles.videoPlayerContainer}>
                 <VideoPlayer
                     videoPlayerStyle={styles.videoPlayerStyle}
+                    playVideo={getTtsStatus('playVideo')}
+                    pauseVideo={getTtsStatus('pauseVideo')}
                 />
             </View>
             {/* Video Player */}
