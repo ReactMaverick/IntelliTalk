@@ -45,6 +45,7 @@ export default function VideoPlayer({ videoPlayerStyle, playVideo, pauseVideo })
             onError={onError}
             muted={true}
             style={videoPlayerStyle}
+            repeat={true}
         />
     )
 }

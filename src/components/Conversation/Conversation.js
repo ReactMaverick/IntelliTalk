@@ -90,7 +90,7 @@ export const Conversation = React.memo(({ navigation }) => {
                 return { id: voice.id, name: voice.name, language: voice.language };
             });
 
-        const availableEnglishVoices = availableVoices.filter((voice) => voice.language === 'en-US');
+        const availableEnglishVoices = availableVoices.filter((voice) => voice.language.startsWith('en'));
 
         console.log('Available English Voices ==> ', availableEnglishVoices);
 
@@ -101,7 +101,7 @@ export const Conversation = React.memo(({ navigation }) => {
         if (availableEnglishVoices && availableEnglishVoices.length > 0) {
             selectedVoice = availableEnglishVoices[0].id;
 
-            console.log('Selected Voice ==> ', selectedVoice);
+            // console.log('Selected Voice ==> ', selectedVoice); //en-au-x-aub-local //en-us-x-iom-local male voices
 
             // try {
             //     await Tts.setDefaultLanguage(availableEnglishVoices[0].language);
@@ -111,7 +111,11 @@ export const Conversation = React.memo(({ navigation }) => {
             //     console.log(`setDefaultLanguage error `, err);
             // }
 
-            await Tts.setDefaultVoice(availableEnglishVoices[0].id);
+            await Tts.setDefaultVoice(selectedVoice);
+
+            // Test TTS
+            // Tts.speak('Hello, how are you?');
+
             setVoices(availableEnglishVoices);
             setSelectedVoice(selectedVoice);
         }
