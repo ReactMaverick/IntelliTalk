@@ -1,6 +1,7 @@
 import { StyleSheet } from "react-native";
 import { colors } from "../../constants/colors";
 import { deviceHeight } from "../../constants/constants";
+import { H1, H2, H6, p } from "../../constants/fontConstants";
 
 export const styles = StyleSheet.create({
     container: {
@@ -89,4 +90,52 @@ export const styles = StyleSheet.create({
         width: '96%',
         // backgroundColor: 'black',
     },
+    selectAssistantContainer: {
+        width: '100%',
+        height: '100%',
+        // backgroundColor: 'red',
+        justifyContent: 'center',
+        alignItems: 'center',
+        gap: 40,
+    },
+    selectAssistantHeaderText: {
+        fontSize: H1,
+        fontWeight: 'bold',
+        color: colors.darkGray,
+    },
+    assistantButton: {
+        // backgroundColor: colors.inputShadow,
+        padding: 10,
+        borderRadius: 10,
+        alignItems: 'center',
+        gap: 5,
+    },
+    assistantImageContainer: {
+        height: 85,
+        width: 85,
+        borderRadius: 50,
+        backgroundColor: colors.lightGray,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    assistantImage: {
+        height: 80,
+        width: 80,
+        resizeMode: 'contain',
+        borderRadius: 50,
+
+    },
+    assistantButtonContainer: {
+        flexDirection: 'row',
+        gap: 10,
+    },
+    assistantText: {
+        fontSize: p,
+        color: colors.darkGray,
+    },
+    assistantSelectorContainer: {
+        position: 'absolute',
+        top: 10,
+        right: 10,
+    }
 });

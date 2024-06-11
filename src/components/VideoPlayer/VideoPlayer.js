@@ -1,10 +1,13 @@
 import Video from 'react-native-video';
 import { styles } from './Style';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import Loader from '../Loader/Loader';
 
-export default function VideoPlayer({ videoPlayerStyle, playVideo, pauseVideo }) {
+export default function VideoPlayer({ videoPlayerStyle, playVideo, pauseVideo, assistant }) {
     const videoRef = useRef(null);
-    const aiVideo = require('../../assets/video/ai_female.mp4');
+    const aiVideo = assistant === 'John' ? require('@/assets/video/ai_john.mp4') : require('@/assets/video/ai_jenny.mp4');
+
+    const [isVideoLoading, setIsVideoLoading] = useState(true);
 
     useEffect(() => {
         console.log('videoRef.current ==> ', videoRef.current);
@@ -21,6 +24,7 @@ export default function VideoPlayer({ videoPlayerStyle, playVideo, pauseVideo })
                 return;
             }
 
+            videoRef.current.seek(0);
             videoRef.current.pause();
         }
     }, [playVideo, pauseVideo, videoRef]);
@@ -34,18 +38,25 @@ export default function VideoPlayer({ videoPlayerStyle, playVideo, pauseVideo })
     }
 
     return (
-        <Video
-            // Can be a URL or a local file.
-            source={aiVideo}
-            // Store reference  
-            ref={videoRef}
-            // Callback when remote video is buffering                                      
-            onBuffer={onBuffer}
-            // Callback when video cannot be loaded              
-            onError={onError}
-            muted={true}
-            style={videoPlayerStyle}
-            repeat={true}
-        />
+        <>
+            {isVideoLoading && <Loader />}
+            <Video
+                // Can be a URL or a local file.
+                source={aiVideo}
+                // Store reference  
+                ref={videoRef}
+                // Callback when remote video is buffering                                      
+                onBuffer={onBuffer}
+                // Callback when video cannot be loaded              
+                onError={onError}
+                muted={true}
+                style={[videoPlayerStyle,
+                    isVideoLoading ? { display: 'none' } : { display: 'flex' }
+                ]}
+                repeat={true}
+                onLoadStart={() => setIsVideoLoading(true)}
+                onLoad={() => setIsVideoLoading(false)}
+            />
+        </>
     )
 }

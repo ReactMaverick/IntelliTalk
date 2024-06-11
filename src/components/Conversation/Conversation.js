@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useRef, useEffect, useMemo } from 'react';
-import { ScrollView, Alert, View, TouchableOpacity } from 'react-native';
+import { ScrollView, Alert, View, TouchableOpacity, Image } from 'react-native';
 import { RESULTS } from 'react-native-permissions';
 import { Text } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -12,19 +12,29 @@ import { useCheckSpeechRecPermissions, useRequestSpeechRecPermissions } from '..
 import { styles } from './Style';
 import LinearGradient from 'react-native-linear-gradient';
 import { useDispatch, useSelector } from 'react-redux';
-import { addConversation, addMessage, chatWithAI, clearConversations, selectConversation, selectMessages } from '../../redux/reducers/conversationReducer';
+import { addFemaleConversation, addFemaleMessage, addMaleConversation, addMaleMessage, chatWithAI, clearFemaleConversations, clearMaleConversations, selectAssistant, selectConversation, selectFemaleConversation, selectFemaleMessages, selectMaleConversation, selectMaleMessages, selectMessages, setAssistant } from '../../redux/reducers/conversationReducer';
 import { colors } from '../../constants/colors';
 import Tts from 'react-native-tts';
 import VideoPlayer from '../VideoPlayer/VideoPlayer';
+import AssistantSelector from '../AssistantSelector/AssistantSelector';
 
 export const Conversation = React.memo(({ navigation }) => {
 
     const dispatch = useDispatch();
 
-    const conversations = useSelector(selectConversation);
+    const assistant = useSelector(selectAssistant);
 
-    const messages = useSelector(selectMessages);
+    console.log('Assistant ==> ', assistant);
 
+    const conversations = assistant && assistant === 'John' ? useSelector(selectMaleConversation) : assistant && assistant === 'Jenny' ? useSelector(selectFemaleConversation) : null;
+
+    const messages = assistant && assistant === 'John' ? useSelector(selectMaleMessages) : assistant && assistant === 'Jenny' ? useSelector(selectFemaleMessages) : null;
+
+    // console.log('Conversation ==> ', conversations);
+
+    // console.log('Messages ==> ', messages);
+
+    // const [assistant, setAssistant] = useState(null);
     const [chatMessages, setChatMessages] = useState([]);
     const [isInConversationMode, setIsInConversationMode] = useState(false);
     const [userMicPermissionGranted, setUserMicPermissionGranted] =
@@ -99,9 +109,9 @@ export const Conversation = React.memo(({ navigation }) => {
         // console.log('Voices ==> ', voices);
 
         if (availableEnglishVoices && availableEnglishVoices.length > 0) {
-            selectedVoice = availableEnglishVoices[0].id;
+            selectedVoice = assistant === 'Jenny' ? availableEnglishVoices[0].id : availableEnglishVoices.find((voice) => voice.id === 'en-us-x-iom-local' || voice.id === 'en-au-x-aub-local').id;
 
-            // console.log('Selected Voice ==> ', selectedVoice); //en-au-x-aub-local //en-us-x-iom-local male voices
+            console.log('Selected Voice ==> ', selectedVoice); //en-au-x-aub-local //en-us-x-iom-local male voices
 
             // try {
             //     await Tts.setDefaultLanguage(availableEnglishVoices[0].language);
@@ -124,6 +134,9 @@ export const Conversation = React.memo(({ navigation }) => {
     useEffect(() => {
         // dispatch(clearConversations());
 
+        // dispatch(clearMaleConversations());
+        // dispatch(clearFemaleConversations());
+
         setSpeechRecStartedHandler(() => {
             console.log('👆 Speech Recognition Started!');
         });
@@ -144,6 +157,22 @@ export const Conversation = React.memo(({ navigation }) => {
             );
         });
     }, [setSpeechRecErrorHandler]);
+
+    useEffect(() => {
+        // console.log("Assistant  ==> ", assistant);
+        const setAssistantVoice = async () => {
+            if (assistant && voices.length > 0) {
+                const assistantVoice = assistant === 'Jenny' ? voices[0].id : voices.find((voice) => voice.id === 'en-us-x-iom-local' || voice.id === 'en-au-x-aub-local').id;
+
+                await Tts.setDefaultVoice(assistantVoice);
+
+                console.log('Assistant Voice ==> ', assistantVoice);
+            }
+        };
+
+        setAssistantVoice();
+
+    }, [assistant]);
 
     useEffect(() => {
         setSpeechRecCompletedHandler(async (userChatMessage) => {
@@ -170,38 +199,81 @@ export const Conversation = React.memo(({ navigation }) => {
                 try {
                     // Send a request to the OpenAI API
 
-                    dispatch(addConversation({
-                        role: 'user',
-                        content: trimmedMessage
-                    }))
+                    console.log("Assistant Before API Call ==> ", assistant);
 
-                    dispatch(addMessage({
-                        role: 'user',
-                        content: trimmedMessage
-                    }))
-
-                    setTimeout(() => {
-                        dispatch(chatWithAI({
-                            messages,
-                            userMessage: {
-                                role: 'user',
-                                content: trimmedMessage
-                            }
+                    if (assistant === null) {
+                        return;
+                    } else if (assistant === 'Jenny') {
+                        dispatch(addFemaleConversation({
+                            role: 'user',
+                            content: trimmedMessage
                         }))
-                            .then((response) => {
-                                console.log("Logic", response.type === 'conversation/chatWithAI/fulfilled');
 
-                                if (response.type === 'conversation/chatWithAI/fulfilled') {
-                                    const aiMessage = response.payload;
+                        dispatch(addFemaleMessage({
+                            role: 'user',
+                            content: trimmedMessage
+                        }))
 
-                                    // console.log('TTs Status ==> ', ttsStatus);
+                        setTimeout(() => {
+                            dispatch(chatWithAI({
+                                messages,
+                                userMessage: {
+                                    role: 'user',
+                                    content: trimmedMessage
+                                },
+                                assistant
+                            }))
+                                .then((response) => {
+                                    // console.log("Logic", response.type === 'conversation/chatWithAI/fulfilled');
 
-                                    Tts.stop();
-                                    Tts.speak(aiMessage);
+                                    // console.log('Response ====================> ', response);
 
-                                }
-                            })
-                    }, 10);
+                                    if (response.type === 'conversation/chatWithAI/fulfilled') {
+                                        const aiMessage = response.payload.response;
+
+                                        // console.log('TTs Status ==> ', ttsStatus);
+
+                                        Tts.stop();
+                                        Tts.speak(aiMessage);
+
+                                    }
+                                })
+                        }, 10);
+                    } else if (assistant === 'John') {
+                        dispatch(addMaleConversation({
+                            role: 'user',
+                            content: trimmedMessage
+                        }))
+
+                        dispatch(addMaleMessage({
+                            role: 'user',
+                            content: trimmedMessage
+                        }))
+
+                        setTimeout(() => {
+                            dispatch(chatWithAI({
+                                messages,
+                                userMessage: {
+                                    role: 'user',
+                                    content: trimmedMessage
+                                },
+                                assistant
+                            }))
+                                .then((response) => {
+                                    console.log("Logic", response.type === 'conversation/chatWithAI/fulfilled');
+
+                                    if (response.type === 'conversation/chatWithAI/fulfilled') {
+                                        const aiMessage = response.payload.response;
+
+                                        // console.log('TTs Status ==> ', ttsStatus);
+
+                                        Tts.stop();
+                                        Tts.speak(aiMessage);
+
+                                    }
+                                })
+                        }, 10);
+                    }
 
                 } catch (error) {
                     console.error('Failed to fetch response from OpenAI: ', error);
@@ -212,7 +284,7 @@ export const Conversation = React.memo(({ navigation }) => {
                 console.log('🎉 Speech Recognition Completed. User spoke nothing. ');
             }
         });
-    }, [setSpeechRecCompletedHandler]);
+    }, [setSpeechRecCompletedHandler, assistant, messages]);
 
     /** ********************************************************
      * Handle asking for speech recognition permission
@@ -345,60 +417,128 @@ export const Conversation = React.memo(({ navigation }) => {
             </View>
             {/* Drawer Close Icon */}
 
-            <ScrollView
-                ref={scrollRef}
-                onContentSizeChange={handleTextAreaSizeChange}
-                style={styles.recognizedTextArea}
-            >
-                {speechRecContentArea}
-            </ScrollView>
-
-            {/* Video Player */}
-            <View style={styles.videoPlayerContainer}>
-                <VideoPlayer
-                    videoPlayerStyle={styles.videoPlayerStyle}
-                    playVideo={getTtsStatus('playVideo')}
-                    pauseVideo={getTtsStatus('pauseVideo')}
+            {/* Assistant Selector Button */}
+            {assistant &&
+                <AssistantSelector
+                    containerStyle={styles.assistantSelectorContainer}
+                    assistant={assistant}
+                    setAssistant={setAssistant}
+                    dispatch={dispatch}
                 />
-            </View>
-            {/* Video Player */}
+            }
+            {/* Assistant Selector Button */}
 
-            <ScrollView
-                ref={conversationScrollRef}
-                style={styles.chatArea}
-                onContentSizeChange={handleConversationSizeChange}
-                showsVerticalScrollIndicator={false}
-            >
-                {conversations.map((message, index) => (
-                    <View key={index} style={[styles.chatBubble,
-                    { alignSelf: message.role === 'user' ? 'flex-end' : 'flex-start' }
-                    ]}>
-                        <Text style={styles.chatMessage}>
-                            <Text style={styles.chatUser}>{message.role === 'user' ? 'You' : 'Assistant'}:</Text> {message.content}
-                        </Text>
+            {assistant
+                ?
+                <>
+                    <ScrollView
+                        ref={scrollRef}
+                        onContentSizeChange={handleTextAreaSizeChange}
+                        style={styles.recognizedTextArea}
+                    >
+                        {speechRecContentArea}
+                    </ScrollView>
+
+                    {/* Video Player */}
+                    <View style={styles.videoPlayerContainer}>
+                        <VideoPlayer
+                            videoPlayerStyle={styles.videoPlayerStyle}
+                            playVideo={getTtsStatus('playVideo')}
+                            pauseVideo={getTtsStatus('pauseVideo')}
+                            assistant={assistant}
+                        />
                     </View>
-                ))}
-            </ScrollView>
+                    {/* Video Player */}
 
-            <LinearGradient
-                colors={['transparent', 'rgba(0, 0, 0, 0.7)']}
-                style={styles.gradient}
-            />
+                    <ScrollView
+                        ref={conversationScrollRef}
+                        style={styles.chatArea}
+                        onContentSizeChange={handleConversationSizeChange}
+                        showsVerticalScrollIndicator={false}
+                    >
+                        {conversations.map((message, index) => (
+                            <View key={index} style={[styles.chatBubble,
+                            { alignSelf: message.role === 'user' ? 'flex-end' : 'flex-start' }
+                            ]}>
+                                <Text style={styles.chatMessage}>
+                                    <Text style={styles.chatUser}>{message.role === 'user' ? 'You' : assistant}:</Text> {message.content}
+                                </Text>
+                            </View>
+                        ))}
+                    </ScrollView>
 
-            <MicrophoneButton
-                containerStyle={styles.micContainer}
-                disabled={false}
-                handleButtonPressed={handleConversationButtonPressed}
-                handleButtonReleased={handleConversationButtonReleased}
-                handleButtonSwipeUp={handleConversationButtonSwipedUp}
-                isInListeningMode={isInConversationMode}
-                tooltipText={
-                    <MicrophoneButtonTooltip
-                        userIsSpeaking={isInConversationMode}
-                        userMicPermissionBlocked={userMicPermissionGranted === false}
+                    <LinearGradient
+                        colors={['transparent', 'rgba(0, 0, 0, 0.7)']}
+                        style={styles.gradient}
                     />
-                }
-            />
+
+                    <MicrophoneButton
+                        containerStyle={styles.micContainer}
+                        disabled={false}
+                        handleButtonPressed={handleConversationButtonPressed}
+                        handleButtonReleased={handleConversationButtonReleased}
+                        handleButtonSwipeUp={handleConversationButtonSwipedUp}
+                        isInListeningMode={isInConversationMode}
+                        tooltipText={
+                            <MicrophoneButtonTooltip
+                                userIsSpeaking={isInConversationMode}
+                                userMicPermissionBlocked={userMicPermissionGranted === false}
+                            />
+                        }
+                    />
+                </> :
+                // Select Assistant
+                <View style={styles.selectAssistantContainer}>
+                    <Text
+                        style={styles.selectAssistantHeaderText}
+                    >
+                        Select Your Assistant
+                    </Text>
+
+                    <View
+                        style={styles.assistantButtonContainer}
+                    >
+                        <TouchableOpacity
+                            onPress={() => {
+                                dispatch(setAssistant('John'));
+                            }}
+                            style={styles.assistantButton}
+                        >
+                            <View
+                                style={styles.assistantImageContainer}
+                            >
+                                <Image
+                                    source={require('@/assets/images/male_assistant.png')}
+                                    style={styles.assistantImage}
+                                />
+                            </View>
+                            <Text
+                                style={styles.assistantText}
+                            >John</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            onPress={() => {
+                                dispatch(setAssistant('Jenny'));
+                            }}
+                            style={styles.assistantButton}
+                        >
+                            <View
+                                style={styles.assistantImageContainer}
+                            >
+                                <Image
+                                    source={require('@/assets/images/female_assistant.png')}
+                                    style={styles.assistantImage}
+                                />
+                            </View>
+                            <Text
+                                style={styles.assistantText}
+                            >Jenny</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            }
+
+
         </SafeAreaView>
     );
 });

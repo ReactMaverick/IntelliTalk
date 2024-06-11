@@ -8,11 +8,11 @@ import { OPENAI_API_KEY } from '../../common/common';
 export const chatWithAI = createAsyncThunk('conversation/chatWithAI', async (data, { rejectWithValue }) => {
   try {
 
-    const { messages, userMessage } = data;
+    const { messages, userMessage, assistant } = data;
 
-    console.log('Messages in async thunk ==> ', messages);
+    // console.log('Messages in async thunk ==> ', messages);
 
-    console.log('User Message in async thunk ==> ', userMessage);
+    // console.log('User Message in async thunk ==> ', userMessage);
 
     const response = await fetch(CHAT_WITH_AI_URL, {
       method: 'POST',
@@ -30,17 +30,17 @@ export const chatWithAI = createAsyncThunk('conversation/chatWithAI', async (dat
       })
     })
 
-    console.log('Request Body in async thunk ==> ', JSON.stringify({
-      model: 'gpt-3.5-turbo',
-      messages: [
-        ...messages,
-        userMessage
-      ],
-      temperature: 0.7,
-    })
-    );
+    // console.log('Request Body in async thunk ==> ', JSON.stringify({
+    //   model: 'gpt-3.5-turbo',
+    //   messages: [
+    //     ...messages,
+    //     userMessage
+    //   ],
+    //   temperature: 0.7,
+    // })
+    // );
 
-    console.log('response in async thunk ==> ', response);
+    // console.log('response in async thunk ==> ', response);
 
     if (!response.ok) {
       return rejectWithValue('Failed to chat with AI');
@@ -48,9 +48,12 @@ export const chatWithAI = createAsyncThunk('conversation/chatWithAI', async (dat
 
     const responseData = await response.json();
 
-    console.log('Response data in async thunk ==> ', responseData);
+    // console.log('Response data in async thunk ==> ', responseData);
 
-    return responseData.choices[0].message.content;
+    return {
+      response: responseData.choices[0].message.content,
+      assistant
+    };
 
   } catch (err) {
     return rejectWithValue(err.message);
@@ -58,13 +61,17 @@ export const chatWithAI = createAsyncThunk('conversation/chatWithAI', async (dat
 });
 
 const initialState = {
-  messages: [
-    {
-      role: 'system',
-      content: 'You are a helpful assistant that can check grammar and provide training.'
-    }
-  ],
-  conversations: [],
+  maleMessages: [{
+    role: 'assistant',
+    content: 'Hello, I am a helpful assistant named "John". I can check grammar and provide training.'
+  }],
+  femaleMessages: [{
+    role: 'assistant',
+    content: 'Hello, I am a helpful assistant named "Jenny". I can check grammar and provide training.'
+  }],
+  maleConversation: [],
+  femaleConversation: [],
+  assistantGender: null,
   error: null
 };
 
@@ -72,32 +79,62 @@ const conversationSlice = createSlice({
   name: 'conversation',
   initialState,
   reducers: {
-    addConversation: (state, action) => {
-      state.conversations.push(action.payload);
+    addMaleConversation: (state, action) => {
+      state.maleConversation.push(action.payload);
     },
-    addMessage: (state, action) => {
-      state.messages.push(action.payload);
+    addFemaleConversation: (state, action) => {
+      state.femaleConversation.push(action.payload);
     },
-    clearConversations: state => {
-      state.conversations = [];
-      state.messages = [{
-        role: 'system',
-        content: 'You are a helpful assistant that can check grammar and provide training.'
+    addMaleMessage: (state, action) => {
+      state.maleMessages.push(action.payload);
+    },
+    addFemaleMessage: (state, action) => {
+      state.femaleMessages.push(action.payload);
+    },
+    setAssistant: (state, action) => {
+      state.assistant = action.payload;
+    },
+    clearMaleConversations: state => {
+      state.maleConversation = [];
+      state.maleMessages = [{
+        role: 'assistant',
+        content: 'Hello, I am a helpful assistant named "John". I can check grammar and provide training.'
+      }];
+    },
+    clearFemaleConversations: state => {
+      state.femaleConversation = [];
+      state.femaleMessages = [{
+        role: 'assistant',
+        content: 'Hello, I am a helpful assistant named "Jenny". I can check grammar and provide training.'
       }];
     }
   },
   extraReducers: builder => {
     builder.addCase(chatWithAI.fulfilled, (state, action) => {
-      // console.log('Action payload ==> ', action.payload);
-      state.conversations.push({
-        role: 'system',
-        content: action.payload
-      });
+      console.log('Action payload ==> ', action.payload);
+      const { response, assistant } = action.payload;
 
-      state.messages.push({
-        role: 'system',
-        content: action.payload
-      });
+      if (assistant === 'John') {
+        state.maleConversation.push({
+          role: 'assistant',
+          content: response
+        });
+
+        state.maleMessages.push({
+          role: 'assistant',
+          content: response
+        });
+      } else {
+        state.femaleConversation.push({
+          role: 'assistant',
+          content: response
+        });
+
+        state.femaleMessages.push({
+          role: 'assistant',
+          content: response
+        });
+      }
     });
 
     builder.addCase(chatWithAI.rejected, (state, action) => {
@@ -107,9 +144,13 @@ const conversationSlice = createSlice({
 
 });
 
-export const selectConversation = state => state.conversationReducer.conversations;
-export const selectMessages = state => state.conversationReducer.messages;
 
-export const { addConversation, clearConversations, addMessage } = conversationSlice.actions;
+export const selectMaleConversation = state => state.conversationReducer.maleConversation;
+export const selectFemaleConversation = state => state.conversationReducer.femaleConversation;
+export const selectMaleMessages = state => state.conversationReducer.maleMessages;
+export const selectFemaleMessages = state => state.conversationReducer.femaleMessages;
+export const selectAssistant = state => state.conversationReducer.assistant;
+
+export const { setAssistant, addMaleConversation, addMaleMessage, addFemaleConversation, addFemaleMessage, clearMaleConversations, clearFemaleConversations } = conversationSlice.actions;
 
 export default conversationSlice.reducer;
