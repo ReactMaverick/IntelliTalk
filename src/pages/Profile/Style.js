@@ -1,6 +1,6 @@
 import { StyleSheet } from "react-native";
 import { colors } from "@/constants/colors";
-import { H1 } from "../../constants/fontConstants";
+import { H1 } from "@/constants/fontConstants";
 
 export const styles = StyleSheet.create({
     container: {
@@ -39,5 +39,15 @@ export const styles = StyleSheet.create({
         width: '100%',
         height: '100%',
         // backgroundColor: 'red'
-    }
+    },
+    updateImgBox: {
+        position: 'relative',
+    },
+    updateImgBtn: {
+        position: 'absolute',
+        bottom: 0,
+        right: 0,
+        backgroundColor: colors.grey,
+        borderRadius: 100,
+    },
 });

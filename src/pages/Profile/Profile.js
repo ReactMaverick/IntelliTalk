@@ -1,4 +1,4 @@
-import { KeyboardAvoidingView, SafeAreaView, ScrollView, Text, TouchableOpacity, View } from "react-native";
+import { Image, KeyboardAvoidingView, SafeAreaView, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { styles } from "./Style";
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { commonStyles } from "../../constants/styles";
@@ -9,6 +9,7 @@ import { selectUser } from "../../redux/reducers/authReducer";
 import { useEffect, useState } from "react";
 import Loader from "../../components/Loader/Loader";
 import { colors } from "../../constants/colors";
+import { PROFILE_ADD, PROFILE_AVATAR } from "../../constants/images";
 
 export default function Profile({ navigation }) {
 
@@ -80,6 +81,55 @@ export default function Profile({ navigation }) {
                     </TouchableOpacity>
                 </View>
                 {/* Drawer Close Icon */}
+
+                {/* Profile Picture */}
+                <View style={styles.updateImgBox}>
+                    <Image source={
+                        PROFILE_AVATAR
+                    }
+                        style={{ width: 120, height: 120, borderRadius: 100 }} />
+
+                    <TouchableOpacity
+                        style={styles.updateImgBtn}
+                        onPress={() => {
+                            // actionSheetRef.current?.show();
+                        }}
+                    >
+                        <Image source={PROFILE_ADD} style={{ width: 45, height: 45 }} />
+                    </TouchableOpacity>
+                </View>
+
+                {/* <ActionSheet
+                    ref={actionSheetRef}
+                    containerStyle={{
+                        backgroundColor: commonColor.backGroundColor,
+                    }}>
+                    <TouchableOpacity
+                        onPress={handleOpenCamera}
+                        style={[styles.outerBtn, { marginTop: 10 }]}>
+                        <AvenirBookText style={styles.btnText}>Take Picture</AvenirBookText>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        onPress={() => {
+                            ImagePicker.openPicker({
+                                width: 300,
+                                height: 300,
+                                cropping: true,
+                            }).then(image => {
+                                actionSheetRef.current?.hide();
+                                uploadImage(image);
+                            }).catch(err => {
+                                // // // console.log('err ==> ', err);
+                                showToast('error', err.message)
+                            }).finally(() => {
+                                actionSheetRef.current?.hide();
+                            });
+                        }}
+                        style={styles.outerBtn}>
+                        <AvenirBookText style={styles.btnText}>Select Image</AvenirBookText>
+                    </TouchableOpacity>
+                </ActionSheet> */}
+                {/* Profile Picture */}
 
                 {isLoading ? <Loader /> :
                     <ScrollView

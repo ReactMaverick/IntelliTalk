@@ -17,6 +17,7 @@ import {
 import { deviceWidth } from "../constants/constants";
 import LinearGradient from "react-native-linear-gradient";
 import { colors } from "../constants/colors";
+import { PROFILE_AVATAR } from "../constants/images";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -72,7 +73,7 @@ const CustomDrawerContent = props => {
                         }}
                     >
                         <Image
-                            source={require('../assets/images/profileAvatar.png')}
+                            source={PROFILE_AVATAR}
                             style={styles.avatarStyle}
                         />
                         <Text style={styles.textStyle}>John Doe</Text>
