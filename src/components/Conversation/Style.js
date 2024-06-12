@@ -6,7 +6,7 @@ import { H1, H2, H6, p } from "../../constants/fontConstants";
 export const styles = StyleSheet.create({
     container: {
         alignItems: 'center',
-        backgroundColor: '#ffffff',
+        backgroundColor: colors.BGBlueColor,
         height: '100%',
         width: '100%',
         paddingHorizontal: 20,
@@ -72,6 +72,10 @@ export const styles = StyleSheet.create({
         backgroundColor: colors.inputShadow,
         borderRadius: 10,
         padding: 10,
+        borderWidth: 1,
+        borderRightWidth: 2,
+        borderBottomWidth: 2,
+        borderColor: colors.lightGray,
     },
     closeDrawerIcon: {
         fontSize: 30,
@@ -79,15 +83,15 @@ export const styles = StyleSheet.create({
     },
     videoPlayerContainer: {
         width: '100%',
-        height: deviceHeight / 3.7,
-        borderRadius: 5,
-        backgroundColor: colors.borderLightColor,
+        height: deviceHeight / 4,
+        borderRadius: 3,
+        backgroundColor: colors.darkColor,
         justifyContent: 'center',
         alignItems: 'center',
     },
     videoPlayerStyle: {
         height: '100%',
-        width: '96%',
+        width: '98%',
         // backgroundColor: 'black',
     },
     selectAssistantContainer: {
