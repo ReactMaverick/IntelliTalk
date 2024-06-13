@@ -42,12 +42,49 @@ export const styles = StyleSheet.create({
     },
     updateImgBox: {
         position: 'relative',
+        width: 120,
+        // backgroundColor: colors.lightGray,
+        alignSelf: 'center',
     },
     updateImgBtn: {
         position: 'absolute',
-        bottom: 0,
-        right: 0,
-        backgroundColor: colors.grey,
+        bottom: 5,
+        right: 5,
+        backgroundColor: colors.lightGray,
         borderRadius: 100,
     },
+    outerBtn: {
+        paddingVertical: 15,
+        backgroundColor: colors.BGBlueColor,
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderBottomWidth: 0.3,
+        borderBottomColor: colors.lightGray,
+    },
+    btnText: {
+        color: colors.darkGrey,
+        // fontSize: 16,
+        fontWeight: '600',
+    },
+    profileImageOuterView: {
+        width: 125,
+        height: 125,
+        borderRadius: 100,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: colors.blueDarkColor
+    },
+    profileImageInnerView: {
+        width: 120,
+        height: 120,
+        borderRadius: 100,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: colors.borderLightColor
+    },
+    profileImage: {
+        width: 120,
+        height: 120,
+        borderRadius: 100
+    }
 });

@@ -43,7 +43,7 @@ export default function AssistantSelector({
         };
     });
 
-    console.log('assistant ==> ', assistant);
+    // console.log('assistant ==> ', assistant);
 
     return (
         <View

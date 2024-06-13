@@ -24,7 +24,7 @@ export const Conversation = React.memo(({ navigation }) => {
 
     const assistant = useSelector(selectAssistant);
 
-    console.log('Assistant ==> ', assistant);
+    // console.log('Assistant ==> ', assistant);
 
     const conversations = assistant && assistant === 'John' ? useSelector(selectMaleConversation) : assistant && assistant === 'Jenny' ? useSelector(selectFemaleConversation) : null;
 
@@ -76,17 +76,17 @@ export const Conversation = React.memo(({ navigation }) => {
         // Initialize TTS
 
         Tts.addEventListener('tts-start', (event) => {
-            console.log('TTS Start ==> ', event);
+            // console.log('TTS Start ==> ', event);
             setTtsStatus('started');
         });
 
         Tts.addEventListener('tts-finish', (event) => {
-            console.log('TTS Finish ==> ', event);
+            // console.log('TTS Finish ==> ', event);
             setTtsStatus('finished');
         });
 
         Tts.addEventListener('tts-cancel', (event) => {
-            console.log('TTS Cancel ==> ', event);
+            // console.log('TTS Cancel ==> ', event);
             setTtsStatus('cancelled');
         });
 
@@ -102,7 +102,7 @@ export const Conversation = React.memo(({ navigation }) => {
 
         const availableEnglishVoices = availableVoices.filter((voice) => voice.language.startsWith('en'));
 
-        console.log('Available English Voices ==> ', availableEnglishVoices);
+        // console.log('Available English Voices ==> ', availableEnglishVoices);
 
         let selectedVoice = null;
 
@@ -111,7 +111,7 @@ export const Conversation = React.memo(({ navigation }) => {
         if (availableEnglishVoices && availableEnglishVoices.length > 0) {
             selectedVoice = assistant === 'Jenny' ? availableEnglishVoices[0].id : availableEnglishVoices.find((voice) => voice.id === 'en-us-x-iom-local' || voice.id === 'en-au-x-aub-local').id;
 
-            console.log('Selected Voice ==> ', selectedVoice); //en-au-x-aub-local //en-us-x-iom-local male voices
+            // console.log('Selected Voice ==> ', selectedVoice); //en-au-x-aub-local //en-us-x-iom-local male voices
 
             // try {
             //     await Tts.setDefaultLanguage(availableEnglishVoices[0].language);
@@ -138,7 +138,7 @@ export const Conversation = React.memo(({ navigation }) => {
         // dispatch(clearFemaleConversations());
 
         setSpeechRecStartedHandler(() => {
-            console.log('👆 Speech Recognition Started!');
+            // console.log('👆 Speech Recognition Started!');
         });
     }, [setSpeechRecStartedHandler]);
 
@@ -166,7 +166,7 @@ export const Conversation = React.memo(({ navigation }) => {
 
                 await Tts.setDefaultVoice(assistantVoice);
 
-                console.log('Assistant Voice ==> ', assistantVoice);
+                // console.log('Assistant Voice ==> ', assistantVoice);
             }
         };
 
@@ -183,10 +183,10 @@ export const Conversation = React.memo(({ navigation }) => {
             const trimmedMessage = userChatMessage.trim();
 
             if (trimmedMessage.length > 0) {
-                console.log(
-                    '🎉 Speech Recognition Completed. Recognized Content: ',
-                    trimmedMessage,
-                );
+                // console.log(
+                //     '🎉 Speech Recognition Completed. Recognized Content: ',
+                //     trimmedMessage,
+                // );
 
                 setChatMessages((prevMessages) => [
                     ...prevMessages,
@@ -199,7 +199,7 @@ export const Conversation = React.memo(({ navigation }) => {
                 try {
                     // Send a request to the OpenAI API
 
-                    console.log("Assistant Before API Call ==> ", assistant);
+                    // console.log("Assistant Before API Call ==> ", assistant);
 
                     if (assistant === null) {
                         return;
@@ -260,7 +260,7 @@ export const Conversation = React.memo(({ navigation }) => {
                                 assistant
                             }))
                                 .then((response) => {
-                                    console.log("Logic", response.type === 'conversation/chatWithAI/fulfilled');
+                                    // console.log("Logic", response.type === 'conversation/chatWithAI/fulfilled');
 
                                     if (response.type === 'conversation/chatWithAI/fulfilled') {
                                         const aiMessage = response.payload.response;
@@ -281,7 +281,7 @@ export const Conversation = React.memo(({ navigation }) => {
 
 
             } else {
-                console.log('🎉 Speech Recognition Completed. User spoke nothing. ');
+                // console.log('🎉 Speech Recognition Completed. User spoke nothing. ');
             }
         });
     }, [setSpeechRecCompletedHandler, assistant, messages]);
@@ -379,7 +379,7 @@ export const Conversation = React.memo(({ navigation }) => {
     }, [speechContentRealTime]);
 
     const getTtsStatus = useCallback((status) => {
-        console.log('Status ==> ', status, ttsStatus);
+        // console.log('Status ==> ', status, ttsStatus);
         switch (status) {
             case 'playVideo':
                 if (ttsStatus === 'started') {

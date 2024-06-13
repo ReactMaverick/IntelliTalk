@@ -10,7 +10,7 @@ export default function VideoPlayer({ videoPlayerStyle, playVideo, pauseVideo, a
     const [isVideoLoading, setIsVideoLoading] = useState(true);
 
     useEffect(() => {
-        console.log('videoRef.current ==> ', videoRef.current);
+        // console.log('videoRef.current ==> ', videoRef.current);
         if (playVideo) {
             if (!videoRef.current) {
                 return;
@@ -30,11 +30,11 @@ export default function VideoPlayer({ videoPlayerStyle, playVideo, pauseVideo, a
     }, [playVideo, pauseVideo, videoRef]);
 
     const onBuffer = ({ isBuffering }) => {
-        console.log("Is Buffering ==> ", isBuffering);
+        // console.log("Is Buffering ==> ", isBuffering);
     }
 
     const onError = (error) => {
-        console.log("Error ==> ", error);
+        // console.log("Error ==> ", error);
     }
 
     return (

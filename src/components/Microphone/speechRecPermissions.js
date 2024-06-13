@@ -23,9 +23,9 @@ export const useRequestSpeechRecPermissions = () => {
     const result = await request(getPermissionToCheck());
 
     if (result === RESULTS.GRANTED) {
-      console.log('🥳 Speech recognition permission granted 🥳');
+      // console.log('🥳 Speech recognition permission granted 🥳');
     } else {
-      console.log('😪 Speech recognition permission NOT granted 😪');
+      // console.log('😪 Speech recognition permission NOT granted 😪');
     }
 
     return result;

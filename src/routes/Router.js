@@ -18,6 +18,8 @@ import { deviceWidth } from "../constants/constants";
 import LinearGradient from "react-native-linear-gradient";
 import { colors } from "../constants/colors";
 import { PROFILE_AVATAR } from "../constants/images";
+import { selectUser } from "../redux/reducers/authReducer";
+import { IMAGE_BASE_URL } from "../values/api/url";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -44,6 +46,10 @@ function MyDrawer() {
 
 const CustomDrawerContent = props => {
 
+    const user = useSelector(selectUser);
+
+    // console.log('user in router drawer component ==> ', user);
+
     return (
         <DrawerContentScrollView {...props}
             contentContainerStyle={{
@@ -64,7 +70,7 @@ const CustomDrawerContent = props => {
                 style={styles.gradientOverlay}
             >
 
-                <View style={{ alignItems: "flex-start", marginLeft: wp("5%") }}>
+                <View style={{ alignItems: "flex-start", paddingHorizontal: wp("5%") }}>
                     <TouchableOpacity
                         style={styles.avatarContainer}
                         onPress={() => {
@@ -73,10 +79,10 @@ const CustomDrawerContent = props => {
                         }}
                     >
                         <Image
-                            source={PROFILE_AVATAR}
+                            source={user?.image ? { uri: IMAGE_BASE_URL + user.image } : PROFILE_AVATAR}
                             style={styles.avatarStyle}
                         />
-                        <Text style={styles.textStyle}>John Doe</Text>
+                        <Text style={styles.textStyle}>{user?.name ?? ''}</Text>
                     </TouchableOpacity>
                     <TouchableOpacity
                         onPress={() => {
@@ -191,7 +197,7 @@ const HomeStack = () => {
 export default function Router() {
     const isUserLoggedIn = useSelector(isLoggedIn);
 
-    // console.log('isLoggedIn ==> ', isUserLoggedIn);
+    console.log('isLoggedIn ==> ', isUserLoggedIn);
 
     if (isUserLoggedIn) {
         return <HomeStack />;
@@ -223,6 +229,9 @@ const styles = StyleSheet.create({
     },
     avatarContainer: {
         justifyContent: 'center',
+        width: '60%',
+        alignItems: 'center',
+        // backgroundColor: 'red'
     },
     avatarStyle: {
         width: 100,
@@ -238,7 +247,6 @@ const styles = StyleSheet.create({
         fontSize: 18,
         color: "#FFFFFF",
         fontWeight: 'bold',
-        alignSelf: 'center',
     },
     gradientOverlay: {
         flex: 1,
