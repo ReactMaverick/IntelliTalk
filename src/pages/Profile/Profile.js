@@ -1,4 +1,4 @@
-import { Image, KeyboardAvoidingView, SafeAreaView, ScrollView, Text, TouchableOpacity, View } from "react-native";
+import { ActivityIndicator, Image, KeyboardAvoidingView, SafeAreaView, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { styles } from "./Style";
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { commonStyles } from "../../constants/styles";
@@ -11,7 +11,7 @@ import Loader from "../../components/Loader/Loader";
 import { colors } from "../../constants/colors";
 import { PROFILE_ADD, PROFILE_AVATAR, PROFILE_EDIT } from "../../constants/images";
 import ActionSheet from "react-native-actions-sheet";
-import { requestCameraPermission } from "../../common/common";
+import { convertToDate, requestCameraPermission } from "../../common/common";
 import ImageCropPicker from "react-native-image-crop-picker";
 import { IMAGE_BASE_URL } from "../../values/api/url";
 
@@ -28,6 +28,7 @@ export default function Profile({ navigation }) {
     // console.log('user ==> ', user);
 
     const [isLoading, setIsLoading] = useState(true);
+    const [isUpdating, setIsUpdating] = useState(false);
     const [formData, setFormData] = useState({
         email: "",
         name: "",
@@ -39,6 +40,8 @@ export default function Profile({ navigation }) {
     const [profileImageURL, setProfileImageURL] = useState(null);
 
     const [isProfileImageUploading, setIsProfileImageUploading] = useState(false);
+
+    const [isUpdateVisible, setIsUpdateVisible] = useState(false);
 
     const [editableFields, setEditableFields] = useState({
         email: false,
@@ -131,7 +134,95 @@ export default function Profile({ navigation }) {
         }
     };
 
+    const handleTextChange = (value, key) => {
+        setFormData({ ...formData, [key]: value });
+        resetErrors();
+    };
+
+    const handleUpdateProfile = () => {
+        const updatedErrors = {
+            email: "",
+            name: "",
+            mobile: "",
+            dob: "",
+        };
+
+        if (!formData.name) {
+            updatedErrors.name = "Name is required";
+            setErrors(updatedErrors);
+            return;
+        } else if (formData.name.length < 3) {
+            updatedErrors.name = 'Name should be at least 3 characters';
+            setErrors(updatedErrors);
+            return;
+        } else if (!/^[a-zA-Z ]+$/.test(formData.name)) {
+            updatedErrors.name = 'Name should contain only alphabets';
+            setErrors(updatedErrors);
+            return;
+        } else if (formData.email && !/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(formData.email)) {
+            updatedErrors.email = 'Invalid email';
+            setErrors(updatedErrors);
+            return;
+        } else if (!formData.mobile) {
+            updatedErrors.mobile = 'Phone number is required';
+            setErrors(updatedErrors);
+            return;
+        } else if (formData.mobile.length < 10) {
+            updatedErrors.mobile = 'Phone number should be 10 digits';
+            setErrors(updatedErrors);
+            return;
+        } else if (!/^[0-9]+$/.test(formData.mobile)) {
+            updatedErrors.mobile = 'Phone number should contain only digits';
+            setErrors(updatedErrors);
+            return;
+        } else if (!formData.email) {
+            updatedErrors.email = "Email is required";
+            setErrors(updatedErrors);
+            return;
+        } else if (!formData.mobile) {
+            updatedErrors.mobile = "Mobile is required";
+            setErrors(updatedErrors);
+            return;
+        } else if (!formData.dob) {
+            updatedErrors.dob = "Date of Birth is required";
+            setErrors(updatedErrors);
+            return;
+        } else {
+            console.log('formData ==> ', formData);
+
+            setIsUpdating(true);
+
+            dispatch(updateProfile({
+                ...formData,
+                token,
+                userId: user._id,
+            }))
+                .then((response) => {
+                    // console.log('response ==> ', response);
+                })
+                .catch((error) => {
+                    // console.log('error ==> ', error);
+                })
+                .finally(() => {
+                    setIsUpdating(false);
+
+                    setIsUpdateVisible(false);
+
+                    setEditableFields({
+                        email: false,
+                        name: false,
+                        mobile: false,
+                        dob: false,
+                    });
+
+                    resetErrors();
+                });
+        }
+    };
+
     // console.log('formData ==> ', formData);
+
+    console.log('Update Visible ==> ', isUpdateVisible);
 
     return (
         <KeyboardAvoidingView
@@ -248,17 +339,16 @@ export default function Profile({ navigation }) {
                                 leftIcon="user"
                                 rightIcon="pencil"
                                 value={formData.name}
-                                onTextChange={(name) => {
-                                    setFormData({ ...formData, name });
-                                    resetErrors();
-                                }}
+                                onTextChange={(name) => handleTextChange(name, "name")}
                                 disabled={!editableFields.name}
                                 error={errors.name !== "" ? true : false}
                                 errorText={errors.name}
                                 leftIconColor={!editableFields.name ? colors.lightGray : colors.darkGray}
                                 rightIconOnPress={() => {
-                                    setEditableFields({ ...editableFields, name: !editableFields.name });
+                                    setEditableFields({ ...editableFields, name: true });
+                                    setIsUpdateVisible(true);
                                 }}
+                                inputContainerBackgroundColor={colors.lightGray}
                             />
                             <FormInput
                                 labelText="Email"
@@ -267,17 +357,16 @@ export default function Profile({ navigation }) {
                                 leftIcon="envelope"
                                 rightIcon="pencil"
                                 value={formData.email}
-                                onTextChange={(email) => {
-                                    setFormData({ ...formData, email });
-                                    resetErrors();
-                                }}
+                                onTextChange={(email) => handleTextChange(email, "email")}
                                 disabled={!editableFields.email}
                                 error={errors.email !== "" ? true : false}
                                 errorText={errors.email}
                                 leftIconColor={!editableFields.email ? colors.lightGray : colors.darkGray}
                                 rightIconOnPress={() => {
-                                    setEditableFields({ ...editableFields, email: !editableFields.email });
+                                    setEditableFields({ ...editableFields, email: true });
+                                    setIsUpdateVisible(true);
                                 }}
+                                inputContainerBackgroundColor={colors.lightGray}
                             />
 
                             <FormInput
@@ -287,39 +376,61 @@ export default function Profile({ navigation }) {
                                 leftIcon="phone"
                                 rightIcon="pencil"
                                 value={formData.mobile}
-                                onTextChange={(mobile) => {
-                                    setFormData({ ...formData, mobile });
-                                    resetErrors();
-                                }}
+                                onTextChange={(mobile) => handleTextChange(mobile, "mobile")}
                                 characterLimit={10}
                                 disabled={!editableFields.mobile}
                                 error={errors.mobile !== "" ? true : false}
                                 errorText={errors.mobile}
                                 leftIconColor={!editableFields.mobile ? colors.lightGray : colors.darkGray}
                                 rightIconOnPress={() => {
-                                    setEditableFields({ ...editableFields, mobile: !editableFields.mobile });
+                                    setEditableFields({ ...editableFields, mobile: true });
+                                    setIsUpdateVisible(true);
                                 }}
+                                inputContainerBackgroundColor={colors.lightGray}
                             />
 
                             <FormInput
                                 labelText="Date of Birth"
                                 datePicker={true}
-                                datePlaceholder="Select your date of birth"
+                                // datePlaceholder="Select your date of birth"
                                 leftIcon="calendar"
                                 rightIcon="pencil"
-                                value={formData.dob}
-                                sendDateValue={(dob) => {
-                                    console.log("dob ==> ", dob);
-                                }}
+                                initialDate={formData.dob ? convertToDate(formData.dob) : null}
+                                sendDateValue={(dob) => handleTextChange(dob, "dob")}
                                 disableFutureDates={true}
                                 disabled={!editableFields.dob}
                                 error={errors.dob !== "" ? true : false}
                                 errorText={errors.dob}
                                 leftIconColor={!editableFields.dob ? colors.lightGray : colors.darkGray}
                                 rightIconOnPress={() => {
-                                    setEditableFields({ ...editableFields, dob: !editableFields.dob });
+                                    setEditableFields({ ...editableFields, dob: true });
+                                    setIsUpdateVisible(true);
                                 }}
+                                inputContainerBackgroundColor={colors.lightGray}
                             />
+
+                            <TouchableOpacity
+                                style={[styles.updateBtn, {
+                                    opacity: isUpdateVisible ? 1 : 0.5,
+                                    pointerEvents: isUpdateVisible ? 'auto' : 'none',
+                                }]}
+                                onPress={() => {
+                                    isUpdateVisible &&
+                                        handleUpdateProfile();
+                                }}
+                            >
+                                <Text style={styles.updateBtnText}>
+                                    {isUpdating ?
+                                        <ActivityIndicator
+                                            animating={isUpdating}
+                                            color={colors.white}
+                                            size="small"
+                                        /> :
+                                        'Update'
+                                    }
+                                </Text>
+                            </TouchableOpacity>
+
                         </View>
 
                     </ScrollView>

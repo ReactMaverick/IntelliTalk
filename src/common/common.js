@@ -33,3 +33,10 @@ export const requestCameraPermission = async () => {
         return true;
     }
 };
+
+export const convertToDate = (date) => {
+    const parts = date.split('-'); // DD-MM-YYYY
+    const dateObject = new Date(parts[2], parts[1] - 1, parts[0]);
+
+    return dateObject;
+}

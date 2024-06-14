@@ -86,5 +86,20 @@ export const styles = StyleSheet.create({
         width: 120,
         height: 120,
         borderRadius: 100
-    }
+    },
+    updateBtn: {
+        paddingVertical: 15,
+        backgroundColor: colors.blueDarkColor,
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderRadius: 10,
+        width: 150,
+        alignSelf: 'center',
+        marginTop: 20,
+    },
+    updateBtnText: {
+        color: colors.white,
+        // fontSize: 16,
+        fontWeight: '600',
+    },
 });

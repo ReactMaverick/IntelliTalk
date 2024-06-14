@@ -155,7 +155,11 @@ const authSlice = createSlice({
       state.next = null;
     });
     builder.addCase(updateProfile.fulfilled, (state, action) => {
-      state.user = action.payload;
+      state.user = action.payload.user;
+      state.next = action.payload.next;
+      if (action.payload.next === 'verifyOTP') {
+        state.isLoggedIn = false;
+      }
     });
     builder.addCase(updateProfile.rejected, (state, action) => {
       state.next = action.payload;
@@ -166,6 +170,7 @@ const authSlice = createSlice({
 
 export const selectUser = state => state.authReducer.user;
 export const selectToken = state => state.authReducer.token;
+export const selectNext = state => state.authReducer.next;
 export const { logout } = authSlice.actions;
 export const isLoggedIn = state => state.authReducer.isLoggedIn;
 export default authSlice.reducer;

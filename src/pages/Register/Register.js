@@ -61,7 +61,7 @@ export default function Register({ navigation }) {
             setErrors(updatedErrors);
             return;
         } else if (formData.name.length < 3) {
-            updatedErrors.name = 'Name should be atleast 3 characters';
+            updatedErrors.name = 'Name should be at least 3 characters';
             setErrors(updatedErrors);
             return;
         } else if (!/^[a-zA-Z ]+$/.test(formData.name)) {

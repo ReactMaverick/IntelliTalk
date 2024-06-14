@@ -1,15 +1,16 @@
 import { KeyboardAvoidingView, SafeAreaView, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { styles } from "./Style";
 import { FormInput } from "react-native-formtastic";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { commonStyles } from "@/constants/styles";
 import { platform } from "@/constants/constants";
-import { login } from "../../redux/reducers/authReducer";
-import { useDispatch } from "react-redux";
+import { login, selectNext } from "../../redux/reducers/authReducer";
+import { useDispatch, useSelector } from "react-redux";
 import Loader from "../../components/Loader/Loader";
 
 export default function Login({ navigation }) {
     const dispatch = useDispatch();
+    const next = useSelector(selectNext);
     const [isLoading, setIsLoading] = useState(false);
     const [isPasswordVisible, setIsPasswordVisible] = useState(false);
     const [formData, setFormData] = useState({
@@ -29,6 +30,13 @@ export default function Login({ navigation }) {
         };
         setErrors(updatedErrors);
     };
+
+    useEffect(() => {
+        console.log('Next in useEffect ==> ', next);
+        if (next === 'verifyOTP') {
+            navigation.navigate('VerifyOTP');
+        }
+    }, [next]);
 
     const handleSubmit = () => {
         let updatedErrors = {
