@@ -12,6 +12,8 @@ export const REGISTER_URL = `${API_URL}register`;
 
 export const LOGIN_URL = `${API_URL}login`;
 
+export const VERIFY_OTP_URL = `${API_URL}verifyOTP`;
+
 export const UPDATE_USER_URL = (id) => `${API_URL}updateUser/${id}`;
 
 export const FORGOT_PASSWORD_URL = `${API_URL}forgotPassword`;

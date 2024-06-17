@@ -88,6 +88,12 @@ export default function Login({ navigation }) {
                 .finally(() => {
                     // console.log('Finally');
                     setIsLoading(false);
+
+                    setFormData({
+                        email: '',
+                        password: '',
+                    });
+
                 });
         }
     };

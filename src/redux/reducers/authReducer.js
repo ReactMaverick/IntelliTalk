@@ -1,8 +1,8 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { postData, postFormData } from '@/values/api/apiprovider';
 import { LOGIN_URL, REGISTER_URL } from '@/values/api/url';
+import { postData, postFormData } from '@/values/api/apiprovider';
 import { showToast } from '@/constants/constants';
-import { UPDATE_USER_URL } from '../../values/api/url';
+import { UPDATE_USER_URL, VERIFY_OTP_URL } from '../../values/api/url';
 import { UNAUTHORIZED_ERROR_CODE } from '../../values/api/statusCodes';
 
 export const register = createAsyncThunk('auth/register', async (data, { rejectWithValue }) => {
@@ -99,6 +99,27 @@ export const updateProfile = createAsyncThunk('auth/updateProfile', async (data,
   }
 });
 
+export const verifyOTP = createAsyncThunk('auth/verifyOTP', async (data, { rejectWithValue }) => {
+  try {
+
+    const { mobile, otp } = data;
+
+    const response = await postData(VERIFY_OTP_URL, { otp, mobile });
+
+    if (!response.isSuccess) {
+      showToast('error', response.message);
+      return rejectWithValue(response.data);
+    } else {
+      showToast('success', response.message);
+
+      return response.data;
+    }
+
+  } catch (err) {
+    return rejectWithValue(err.message);
+  }
+});
+
 
 const initialState = {
   user: null,
@@ -132,7 +153,7 @@ const authSlice = createSlice({
     });
 
     builder.addCase(register.rejected, (state, action) => {
-      state.next = action.payload;
+      state.next = null;
     });
 
     builder.addCase(login.pending, (state, action) => {
@@ -148,7 +169,23 @@ const authSlice = createSlice({
       }
     });
     builder.addCase(login.rejected, (state, action) => {
-      state.next = action.payload;
+      state.next = null;
+    });
+
+    builder.addCase(verifyOTP.pending, (state, action) => {
+      state.next = null;
+    });
+    builder.addCase(verifyOTP.fulfilled, (state, action) => {
+      console.log('action.payload fulfilled ==> ', action.payload);
+      state.user = action.payload.user;
+      state.next = action.payload.next;
+      if (action.payload.token) {
+        state.isLoggedIn = true;
+      }
+    });
+    builder.addCase(verifyOTP.rejected, (state, action) => {
+      console.log('action.payload rejected ==> ', action.payload);
+      state.next = action.payload.next;
     });
 
     builder.addCase(updateProfile.pending, (state, action) => {
@@ -162,7 +199,7 @@ const authSlice = createSlice({
       }
     });
     builder.addCase(updateProfile.rejected, (state, action) => {
-      state.next = action.payload;
+      state.next = null;
     });
   }
 
