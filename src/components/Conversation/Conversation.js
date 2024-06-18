@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useRef, useEffect, useMemo } from 'react';
-import { ScrollView, Alert, View, TouchableOpacity, Image } from 'react-native';
+import { ScrollView, Alert, View, TouchableOpacity, Image, TouchableWithoutFeedback } from 'react-native';
 import { RESULTS } from 'react-native-permissions';
 import { Text } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -26,9 +26,9 @@ export const Conversation = React.memo(({ navigation }) => {
 
     // console.log('Assistant ==> ', assistant);
 
-    const conversations = assistant && assistant === 'John' ? useSelector(selectMaleConversation) : assistant && assistant === 'Jenny' ? useSelector(selectFemaleConversation) : null;
+    const conversations = assistant && assistant === 'John' ? useSelector(selectMaleConversation) : assistant && assistant === 'Jenny' ? useSelector(selectFemaleConversation) : [];
 
-    const messages = assistant && assistant === 'John' ? useSelector(selectMaleMessages) : assistant && assistant === 'Jenny' ? useSelector(selectFemaleMessages) : null;
+    const messages = assistant && assistant === 'John' ? useSelector(selectMaleMessages) : assistant && assistant === 'Jenny' ? useSelector(selectFemaleMessages) : [];
 
     // console.log('Conversation ==> ', conversations);
 
@@ -37,6 +37,7 @@ export const Conversation = React.memo(({ navigation }) => {
     // const [assistant, setAssistant] = useState(null);
     const [chatMessages, setChatMessages] = useState([]);
     const [isInConversationMode, setIsInConversationMode] = useState(false);
+    const [isAssistantSelectorVisible, setIsAssistantSelectorVisible] = useState(false);
     const [userMicPermissionGranted, setUserMicPermissionGranted] =
         useState(false);
 
@@ -63,46 +64,53 @@ export const Conversation = React.memo(({ navigation }) => {
     const [ttsStatus, setTtsStatus] = useState('initializing');
 
     useEffect(() => {
+        if (userMicPermissionGranted) {
 
-        // Initialize TTS
-        Tts.getInitStatus()
-            .then(() => {
-                initTts();
-            }, (err) => {
-                if (err.code === 'no_engine') {
-                    Tts.requestInstallEngine();
-                }
+            // Initialize TTS
+            Tts.getInitStatus()
+                .then(() => {
+                    initTts();
+                }, (err) => {
+                    if (err.code === 'no_engine') {
+                        Tts.requestInstallEngine();
+                    }
+                });
+            // Initialize TTS
+
+            Tts.addEventListener('tts-start', (event) => {
+                // console.log('TTS Start ==> ', event);
+                setTtsStatus('started');
             });
-        // Initialize TTS
 
-        Tts.addEventListener('tts-start', (event) => {
-            // console.log('TTS Start ==> ', event);
-            setTtsStatus('started');
-        });
+            Tts.addEventListener('tts-finish', (event) => {
+                // console.log('TTS Finish ==> ', event);
+                setTtsStatus('finished');
+            });
 
-        Tts.addEventListener('tts-finish', (event) => {
-            // console.log('TTS Finish ==> ', event);
-            setTtsStatus('finished');
-        });
+            Tts.addEventListener('tts-cancel', (event) => {
+                // console.log('TTS Cancel ==> ', event);
+                setTtsStatus('cancelled');
+            });
+        }
 
-        Tts.addEventListener('tts-cancel', (event) => {
-            // console.log('TTS Cancel ==> ', event);
-            setTtsStatus('cancelled');
-        });
-
-    }, []);
+    }, [userMicPermissionGranted]);
 
     const initTts = async () => {
         const voices = await Tts.voices();
+
+        console.log('Voices ==> ', voices);
+
         const availableVoices = voices
-            .filter((voice) => !voice.networkConnectionRequired && !voice.notInstalled)
-            .map((voice) => {
+            ?.filter((voice) => !voice.networkConnectionRequired && !voice.notInstalled)
+            ?.map((voice) => {
                 return { id: voice.id, name: voice.name, language: voice.language };
             });
 
-        const availableEnglishVoices = availableVoices.filter((voice) => voice.language.startsWith('en'));
+        console.log('Available Voices ==> ', availableVoices);
 
-        // console.log('Available English Voices ==> ', availableEnglishVoices);
+        const availableEnglishVoices = availableVoices?.filter((voice) => voice.language.startsWith('en'));
+
+        console.log('Available English Voices ==> ', availableEnglishVoices);
 
         let selectedVoice = null;
 
@@ -161,7 +169,7 @@ export const Conversation = React.memo(({ navigation }) => {
     useEffect(() => {
         // console.log("Assistant  ==> ", assistant);
         const setAssistantVoice = async () => {
-            if (assistant && voices.length > 0) {
+            if (assistant && voices?.length > 0) {
                 const assistantVoice = assistant === 'Jenny' ? voices[0].id : voices.find((voice) => voice.id === 'en-us-x-iom-local' || voice.id === 'en-au-x-aub-local').id;
 
                 await Tts.setDefaultVoice(assistantVoice);
@@ -172,7 +180,7 @@ export const Conversation = React.memo(({ navigation }) => {
 
         setAssistantVoice();
 
-    }, [assistant]);
+    }, [assistant, voices]);
 
     useEffect(() => {
         setSpeechRecCompletedHandler(async (userChatMessage) => {
@@ -182,7 +190,7 @@ export const Conversation = React.memo(({ navigation }) => {
 
             const trimmedMessage = userChatMessage.trim();
 
-            if (trimmedMessage.length > 0) {
+            if (trimmedMessage?.length > 0) {
                 // console.log(
                 //     '🎉 Speech Recognition Completed. Recognized Content: ',
                 //     trimmedMessage,
@@ -298,20 +306,6 @@ export const Conversation = React.memo(({ navigation }) => {
         });
     }, [checkForPermission]);
 
-    // useEffect(() => {
-    //     if (conversations.length > 0) {
-    //         const lastMessage = conversations[conversations.length - 1];
-    //         if (lastMessage.role === 'system') {
-    //             console.log('AI Response ==> ', lastMessage.content);
-
-    //             if (ttsStatus === 'initialized') {
-    //                 Tts.stop();
-    //                 Tts.speak(lastMessage.content);
-    //             }
-    //         }
-    //     }
-    // }, [conversations]);
-
     const checkAndAskForPermission = useCallback(async () => {
         const permissionCheckResult = await checkForPermission();
         if (permissionCheckResult === RESULTS.GRANTED) {
@@ -397,149 +391,161 @@ export const Conversation = React.memo(({ navigation }) => {
     });
 
     return (
-        <SafeAreaView style={styles.container}>
-            {/* Drawer Close Icon */}
-            <View
-                style={styles.closeDrawer}
-            >
-                <TouchableOpacity
-                    onPress={() => {
-                        navigation.toggleDrawer();
-                    }}
-                    style={styles.closeDrawerButton}
-                >
-                    <Icon
-                        name="menu"
-                        type='MaterialIcons'
-                        style={styles.closeDrawerIcon}
-                    />
-                </TouchableOpacity>
-            </View>
-            {/* Drawer Close Icon */}
-
-            {/* Assistant Selector Button */}
-            {assistant &&
-                <AssistantSelector
-                    containerStyle={styles.assistantSelectorContainer}
-                    assistant={assistant}
-                    setAssistant={setAssistant}
-                    dispatch={dispatch}
-                />
-            }
-            {/* Assistant Selector Button */}
-
-            {assistant
-                ?
+        <TouchableWithoutFeedback
+            onPress={() => {
+                console.log('isAssistantSelectorVisible ==> ', isAssistantSelectorVisible);
+                if (isAssistantSelectorVisible) {
+                    setIsAssistantSelectorVisible(false);
+                }
+            }}
+        >
+            <SafeAreaView style={styles.container}>
                 <>
-                    <ScrollView
-                        ref={scrollRef}
-                        onContentSizeChange={handleTextAreaSizeChange}
-                        style={styles.recognizedTextArea}
-                    >
-                        {speechRecContentArea}
-                    </ScrollView>
-
-                    {/* Video Player */}
-                    <View style={styles.videoPlayerContainer}>
-                        <VideoPlayer
-                            videoPlayerStyle={styles.videoPlayerStyle}
-                            playVideo={getTtsStatus('playVideo')}
-                            pauseVideo={getTtsStatus('pauseVideo')}
-                            assistant={assistant}
-                        />
-                    </View>
-                    {/* Video Player */}
-
-                    <ScrollView
-                        ref={conversationScrollRef}
-                        style={styles.chatArea}
-                        onContentSizeChange={handleConversationSizeChange}
-                        showsVerticalScrollIndicator={false}
-                    >
-                        {conversations.map((message, index) => (
-                            <View key={index} style={[styles.chatBubble,
-                            { alignSelf: message.role === 'user' ? 'flex-end' : 'flex-start' }
-                            ]}>
-                                <Text style={styles.chatMessage}>
-                                    <Text style={styles.chatUser}>{message.role === 'user' ? 'You' : assistant}:</Text> {message.content}
-                                </Text>
-                            </View>
-                        ))}
-                    </ScrollView>
-
-                    <LinearGradient
-                        colors={['transparent', 'rgba(0, 0, 0, 0.7)']}
-                        style={styles.gradient}
-                    />
-
-                    <MicrophoneButton
-                        containerStyle={styles.micContainer}
-                        disabled={false}
-                        handleButtonPressed={handleConversationButtonPressed}
-                        handleButtonReleased={handleConversationButtonReleased}
-                        handleButtonSwipeUp={handleConversationButtonSwipedUp}
-                        isInListeningMode={isInConversationMode}
-                        tooltipText={
-                            <MicrophoneButtonTooltip
-                                userIsSpeaking={isInConversationMode}
-                                userMicPermissionBlocked={userMicPermissionGranted === false}
-                            />
-                        }
-                    />
-                </> :
-                // Select Assistant
-                <View style={styles.selectAssistantContainer}>
-                    <Text
-                        style={styles.selectAssistantHeaderText}
-                    >
-                        Select Your Assistant
-                    </Text>
-
+                    {/* Drawer Close Icon */}
                     <View
-                        style={styles.assistantButtonContainer}
+                        style={styles.closeDrawer}
                     >
                         <TouchableOpacity
                             onPress={() => {
-                                dispatch(setAssistant('John'));
+                                setIsAssistantSelectorVisible(false);
+                                navigation.toggleDrawer();
                             }}
-                            style={styles.assistantButton}
+                            style={styles.closeDrawerButton}
                         >
-                            <View
-                                style={styles.assistantImageContainer}
-                            >
-                                <Image
-                                    source={require('@/assets/images/male_assistant.png')}
-                                    style={styles.assistantImage}
-                                />
-                            </View>
-                            <Text
-                                style={styles.assistantText}
-                            >John</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                            onPress={() => {
-                                dispatch(setAssistant('Jenny'));
-                            }}
-                            style={styles.assistantButton}
-                        >
-                            <View
-                                style={styles.assistantImageContainer}
-                            >
-                                <Image
-                                    source={require('@/assets/images/female_assistant.png')}
-                                    style={styles.assistantImage}
-                                />
-                            </View>
-                            <Text
-                                style={styles.assistantText}
-                            >Jenny</Text>
+                            <Icon
+                                name="menu"
+                                type='MaterialIcons'
+                                style={styles.closeDrawerIcon}
+                            />
                         </TouchableOpacity>
                     </View>
-                </View>
-            }
+                    {/* Drawer Close Icon */}
 
+                    {/* Assistant Selector Button */}
+                    {assistant &&
+                        <AssistantSelector
+                            containerStyle={styles.assistantSelectorContainer}
+                            assistant={assistant}
+                            setAssistant={setAssistant}
+                            dispatch={dispatch}
+                            assistantSelectorVisible={isAssistantSelectorVisible}
+                            setAssistantSelectorVisible={setIsAssistantSelectorVisible}
+                        />
+                    }
+                    {/* Assistant Selector Button */}
 
-        </SafeAreaView>
+                    {assistant
+                        ?
+                        <>
+                            <ScrollView
+                                ref={scrollRef}
+                                onContentSizeChange={handleTextAreaSizeChange}
+                                style={styles.recognizedTextArea}
+                            >
+                                {speechRecContentArea}
+                            </ScrollView>
+
+                            {/* Video Player */}
+                            <View style={styles.videoPlayerContainer}>
+                                <VideoPlayer
+                                    videoPlayerStyle={styles.videoPlayerStyle}
+                                    playVideo={getTtsStatus('playVideo')}
+                                    pauseVideo={getTtsStatus('pauseVideo')}
+                                    assistant={assistant}
+                                />
+                            </View>
+                            {/* Video Player */}
+
+                            <ScrollView
+                                ref={conversationScrollRef}
+                                style={styles.chatArea}
+                                onContentSizeChange={handleConversationSizeChange}
+                                showsVerticalScrollIndicator={false}
+                            >
+                                {conversations?.map((message, index) => (
+                                    <View key={index} style={[styles.chatBubble,
+                                    { alignSelf: message.role === 'user' ? 'flex-end' : 'flex-start' }
+                                    ]}>
+                                        <Text style={styles.chatMessage}>
+                                            <Text style={styles.chatUser}>{message.role === 'user' ? 'You' : assistant}:</Text> {message.content}
+                                        </Text>
+                                    </View>
+                                ))}
+                            </ScrollView>
+
+                            <LinearGradient
+                                colors={['transparent', 'rgba(0, 0, 0, 0.7)']}
+                                style={styles.gradient}
+                            />
+
+                            <MicrophoneButton
+                                containerStyle={styles.micContainer}
+                                disabled={false}
+                                handleButtonPressed={handleConversationButtonPressed}
+                                handleButtonReleased={handleConversationButtonReleased}
+                                handleButtonSwipeUp={handleConversationButtonSwipedUp}
+                                isInListeningMode={isInConversationMode}
+                                tooltipText={
+                                    <MicrophoneButtonTooltip
+                                        userIsSpeaking={isInConversationMode}
+                                        userMicPermissionBlocked={userMicPermissionGranted === false}
+                                    />
+                                }
+                            />
+                        </> :
+                        // Select Assistant
+                        <View style={styles.selectAssistantContainer}>
+                            <Text
+                                style={styles.selectAssistantHeaderText}
+                            >
+                                Select Your Assistant
+                            </Text>
+
+                            <View
+                                style={styles.assistantButtonContainer}
+                            >
+                                <TouchableOpacity
+                                    onPress={() => {
+                                        dispatch(setAssistant('John'));
+                                    }}
+                                    style={styles.assistantButton}
+                                >
+                                    <View
+                                        style={styles.assistantImageContainer}
+                                    >
+                                        <Image
+                                            source={require('@/assets/images/male_assistant.png')}
+                                            style={styles.assistantImage}
+                                        />
+                                    </View>
+                                    <Text
+                                        style={styles.assistantText}
+                                    >John</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity
+                                    onPress={() => {
+                                        dispatch(setAssistant('Jenny'));
+                                    }}
+                                    style={styles.assistantButton}
+                                >
+                                    <View
+                                        style={styles.assistantImageContainer}
+                                    >
+                                        <Image
+                                            source={require('@/assets/images/female_assistant.png')}
+                                            style={styles.assistantImage}
+                                        />
+                                    </View>
+                                    <Text
+                                        style={styles.assistantText}
+                                    >Jenny</Text>
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+                    }
+                </>
+            </SafeAreaView>
+        </TouchableWithoutFeedback>
     );
 });
 

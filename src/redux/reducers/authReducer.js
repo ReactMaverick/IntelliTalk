@@ -108,7 +108,7 @@ export const verifyOTP = createAsyncThunk('auth/verifyOTP', async (data, { rejec
 
     if (!response.isSuccess) {
       showToast('error', response.message);
-      return rejectWithValue(response.data);
+      return rejectWithValue(response);
     } else {
       showToast('success', response.message);
 
@@ -185,7 +185,7 @@ const authSlice = createSlice({
     });
     builder.addCase(verifyOTP.rejected, (state, action) => {
       console.log('action.payload rejected ==> ', action.payload);
-      state.next = action.payload.next;
+      state.next = action.payload.data.next;
     });
 
     builder.addCase(updateProfile.pending, (state, action) => {

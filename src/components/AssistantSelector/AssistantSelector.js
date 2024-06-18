@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Image, TouchableOpacity, View, StyleSheet, TouchableWithoutFeedback } from 'react-native';
 import Animated, { useSharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated';
 import { styles } from './Style';
@@ -8,9 +8,17 @@ export default function AssistantSelector({
     assistant,
     setAssistant,
     dispatch,
+    assistantSelectorVisible,
+    setAssistantSelectorVisible,
 }) {
     // Create a shared value for the animation
     const animation = useSharedValue(0);
+
+    useEffect(() => {
+        if (!assistantSelectorVisible) {
+            stopAnimation();
+        }
+    }, [assistantSelectorVisible]);
 
     // Define the function to start the animation
     const startAnimation = () => {
@@ -29,9 +37,11 @@ export default function AssistantSelector({
         // If the animation value is 0, start the animation
         if (animation.value === 0) {
             startAnimation();
+            setAssistantSelectorVisible(true);
         } else {
             // Otherwise, reset the animation value to 0
             stopAnimation();
+            setAssistantSelectorVisible(false);
         }
     };
 

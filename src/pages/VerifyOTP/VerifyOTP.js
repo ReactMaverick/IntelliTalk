@@ -1,10 +1,10 @@
 import { Text, View } from "react-native";
 import { useEffect, useState } from "react";
-import { OneTapInput, ResendOTPButton } from "react-native-onetapinput";
 import { styles } from "./Style";
 import { useDispatch, useSelector } from "react-redux";
 import { selectNext, selectUser, verifyOTP } from "../../redux/reducers/authReducer";
 import Loader from "../../components/Loader/Loader";
+import { OneTapInput, ResendOTPButton } from "react-native-onetapinput";
 
 export default function VerifyOTP({ navigation }) {
 
@@ -32,10 +32,16 @@ export default function VerifyOTP({ navigation }) {
     // console.log('User: ', user);
 
     const submitOtp = (otp) => {
-        // console.log('OTP: ', otp);
+        console.log('OTP: ', otp);
         setIsLoading(true);
         dispatch(verifyOTP({ mobile: user.mobile, otp }))
             .then((response) => {
+                if (response.error) {
+                    setError({
+                        otp: response.payload.message,
+                    });
+                    return;
+                }
             })
             .catch((err) => {
                 console.log('Error: ', err);
@@ -63,14 +69,16 @@ export default function VerifyOTP({ navigation }) {
 
             <OneTapInput
                 // otpCount={8}
-                // handleOtpChange={(otp: string) => {
-                //     console.log('OTP: ', otp);
-                // }}
+                handleOtpChange={(otp) => {
+                    setError({
+                        otp: '',
+                    });
+                }}
                 getFinalOtp={submitOtp}
-                // getHashCode={(hash: string[]) => {
-                //     console.log('Hash code ===> ', hash);
-                //     setHash(hash); // The hash to be used in the SMS receiver app format: <#> Your Otp is is: 123ABC78. Use this code to log in. D2GX4obkbds <#>
-                // }}
+                getHashCode={(hash) => {
+                    console.log('Hash code ===> ', hash);
+                    // setHash(hash); // The hash to be used in the SMS receiver app format: <#> Your Otp is is: 123ABC78. Use this code to log in. D2GX4obkbds <#>
+                }}
                 // hiddenText={true}
                 // hiddenTextSymbol="*"
                 error={error.otp ? true : false}

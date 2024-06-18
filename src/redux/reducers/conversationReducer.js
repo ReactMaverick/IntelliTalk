@@ -71,7 +71,7 @@ const initialState = {
   }],
   maleConversation: [],
   femaleConversation: [],
-  assistantGender: null,
+  assistant: null,
   error: null
 };
 
