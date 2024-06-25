@@ -105,7 +105,7 @@ export const styles = StyleSheet.create({
     selectAssistantHeaderText: {
         fontSize: H1,
         fontWeight: 'bold',
-        color: colors.darkGray,
+        color: colors.blueDarkColor,
     },
     assistantButton: {
         // backgroundColor: colors.inputShadow,
@@ -135,7 +135,7 @@ export const styles = StyleSheet.create({
     },
     assistantText: {
         fontSize: p,
-        color: colors.darkGray,
+        color: colors.blueDarkColor,
     },
     assistantSelectorContainer: {
         position: 'absolute',

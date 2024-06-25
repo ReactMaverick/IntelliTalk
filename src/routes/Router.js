@@ -6,7 +6,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import Login from "@/pages/Login/Login";
 import Register from "@/pages/Register/Register";
 import VerifyOTP from "@/pages/VerifyOTP/VerifyOTP";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { isLoggedIn } from "@/redux/reducers/authReducer";
 import { DrawerContentScrollView, createDrawerNavigator } from "@react-navigation/drawer";
 import { Image, ImageBackground, StyleSheet, Text, TouchableOpacity, View } from "react-native";
@@ -18,7 +18,7 @@ import { deviceWidth } from "../constants/constants";
 import LinearGradient from "react-native-linear-gradient";
 import { colors } from "../constants/colors";
 import { PROFILE_AVATAR } from "../constants/images";
-import { selectUser } from "../redux/reducers/authReducer";
+import { logout, selectUser } from "../redux/reducers/authReducer";
 import { IMAGE_BASE_URL } from "../values/api/url";
 
 const Stack = createNativeStackNavigator();
@@ -47,6 +47,8 @@ function MyDrawer() {
 const CustomDrawerContent = props => {
 
     const user = useSelector(selectUser);
+
+    const dispatch = useDispatch();
 
     // console.log('user in router drawer component ==> ', user);
 
@@ -104,6 +106,18 @@ const CustomDrawerContent = props => {
                         <View style={styles.drawerMenu}>
                             <Icon name="person" type='SimpleLineIcons' style={styles.drawerIcon} />
                             <Text style={styles.drawerMenuText}>Profile</Text>
+                        </View>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                        onPress={() => {
+                            props.navigation.closeDrawer();
+                            dispatch(logout());
+                        }}
+                    >
+                        <View style={styles.drawerMenu}>
+                            <Icon name="exit" type='SimpleLineIcons' style={styles.drawerIcon} />
+                            <Text style={styles.drawerMenuText}>Log Out</Text>
                         </View>
                     </TouchableOpacity>
                 </View>

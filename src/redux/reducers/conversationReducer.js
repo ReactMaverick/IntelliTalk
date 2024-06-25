@@ -144,11 +144,14 @@ const conversationSlice = createSlice({
 
 });
 
+export const selectConversation = (state, assistant) => {
+  return assistant === 'John' ? state.conversationReducer.maleConversation : state.conversationReducer.femaleConversation;
+};
 
-export const selectMaleConversation = state => state.conversationReducer.maleConversation;
-export const selectFemaleConversation = state => state.conversationReducer.femaleConversation;
-export const selectMaleMessages = state => state.conversationReducer.maleMessages;
-export const selectFemaleMessages = state => state.conversationReducer.femaleMessages;
+export const selectMessages = (state, assistant) => {
+  return assistant === 'John' ? state.conversationReducer.maleMessages : state.conversationReducer.femaleMessages;
+};
+
 export const selectAssistant = state => state.conversationReducer.assistant;
 
 export const { setAssistant, addMaleConversation, addMaleMessage, addFemaleConversation, addFemaleMessage, clearMaleConversations, clearFemaleConversations } = conversationSlice.actions;

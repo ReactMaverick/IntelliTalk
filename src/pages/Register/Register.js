@@ -161,6 +161,7 @@ export default function Register({ navigation }) {
                             isRequired={true}
                             characterLimit={20}
                             value={formData.name}
+                            inputTextColor={colors.blueDarkColor}
                             onTextChange={(name) => {
                                 setFormData({
                                     ...formData,
@@ -178,6 +179,7 @@ export default function Register({ navigation }) {
                             inputType="email-address"
                             leftIcon="envelope"
                             value={formData.email}
+                            inputTextColor={colors.blueDarkColor}
                             onTextChange={(email) => {
                                 setFormData({ ...formData, email });
                                 resetErrors();
@@ -193,6 +195,7 @@ export default function Register({ navigation }) {
                             characterLimit={10}
                             inputType='numeric'
                             value={formData.mobile}
+                            inputTextColor={colors.blueDarkColor}
                             onTextChange={(mobile) => {
                                 setFormData({
                                     ...formData,
@@ -211,6 +214,7 @@ export default function Register({ navigation }) {
                             isRequired={true}
                             error={errors.dob !== ''}
                             errorText={errors.dob}
+                            inputTextColor={colors.blueDarkColor}
                             leftIcon={'calendar'}
                             datePicker={true}
                             disableFutureDates={true}
@@ -235,6 +239,7 @@ export default function Register({ navigation }) {
                             isRequired={true}
                             placeholderText="Enter your password"
                             value={formData.password}
+                            inputTextColor={colors.blueDarkColor}
                             onTextChange={(password) => {
                                 setFormData({ ...formData, password });
                                 resetErrors();
@@ -253,6 +258,7 @@ export default function Register({ navigation }) {
                             placeholderText='Re-enter your password'
                             labelText='Confirm Password'
                             isRequired={true}
+                            inputTextColor={colors.blueDarkColor}
                             value={formData.confirmPassword}
                             onTextChange={(confirmPassword) => {
                                 setFormData({

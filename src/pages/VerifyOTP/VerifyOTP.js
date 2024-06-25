@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { selectNext, selectUser, verifyOTP } from "../../redux/reducers/authReducer";
 import Loader from "../../components/Loader/Loader";
 import { OneTapInput, ResendOTPButton } from "react-native-onetapinput";
+import { colors } from "../../constants/colors";
 
 export default function VerifyOTP({ navigation }) {
 
@@ -62,6 +63,7 @@ export default function VerifyOTP({ navigation }) {
                 style={{
                     fontSize: 20,
                     fontWeight: 'bold',
+                    color: colors.blueDarkColor
                 }}
             >
                 Verify OTP

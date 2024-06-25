@@ -26,9 +26,9 @@ export const Conversation = React.memo(({ navigation }) => {
 
     // console.log('Assistant ==> ', assistant);
 
-    const conversations = assistant && assistant === 'John' ? useSelector(selectMaleConversation) : assistant && assistant === 'Jenny' ? useSelector(selectFemaleConversation) : [];
+    const conversations = useSelector(state => selectConversation(state, assistant));
 
-    const messages = assistant && assistant === 'John' ? useSelector(selectMaleMessages) : assistant && assistant === 'Jenny' ? useSelector(selectFemaleMessages) : [];
+    const messages = useSelector(state => selectMessages(state, assistant));
 
     // console.log('Conversation ==> ', conversations);
 

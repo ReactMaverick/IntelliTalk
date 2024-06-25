@@ -9,10 +9,12 @@ export const styles = StyleSheet.create({
         alignItems: "center",
         paddingVertical: 20,
         minHeight: deviceHeight,
+        backgroundColor: colors.BGBlueColor,
     },
     title: {
         fontSize: H1,
         fontWeight: '600',
+        color: colors.blueDarkColor,
     },
     button: {
         backgroundColor: colors.primary,
@@ -28,6 +30,7 @@ export const styles = StyleSheet.create({
     registerLink: {
         marginTop: 20,
         fontSize: p,
+        color: colors.blueDarkColor,
     },
     link: {
         color: colors.primary,

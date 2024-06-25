@@ -7,6 +7,7 @@ import { platform } from "@/constants/constants";
 import { login, selectNext } from "../../redux/reducers/authReducer";
 import { useDispatch, useSelector } from "react-redux";
 import Loader from "../../components/Loader/Loader";
+import { colors } from "../../constants/colors";
 
 export default function Login({ navigation }) {
     const dispatch = useDispatch();
@@ -125,6 +126,7 @@ export default function Login({ navigation }) {
                             inputType="email-address"
                             leftIcon="envelope"
                             value={formData.email}
+                            inputTextColor={colors.blueDarkColor}
                             onTextChange={(email) => {
                                 setFormData({ ...formData, email });
                                 resetErrors();
@@ -138,6 +140,7 @@ export default function Login({ navigation }) {
                             isRequired={true}
                             placeholderText="Enter your password"
                             value={formData.password}
+                            inputTextColor={colors.blueDarkColor}
                             onTextChange={(password) => {
                                 setFormData({ ...formData, password });
                                 resetErrors();

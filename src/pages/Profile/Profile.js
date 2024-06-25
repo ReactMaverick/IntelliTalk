@@ -339,6 +339,7 @@ export default function Profile({ navigation }) {
                                 leftIcon="user"
                                 rightIcon="pencil"
                                 value={formData.name}
+                                inputTextColor={colors.blueDarkColor}
                                 onTextChange={(name) => handleTextChange(name, "name")}
                                 disabled={!editableFields.name}
                                 error={errors.name !== "" ? true : false}
@@ -357,6 +358,7 @@ export default function Profile({ navigation }) {
                                 leftIcon="envelope"
                                 rightIcon="pencil"
                                 value={formData.email}
+                                inputTextColor={colors.blueDarkColor}
                                 onTextChange={(email) => handleTextChange(email, "email")}
                                 disabled={!editableFields.email}
                                 error={errors.email !== "" ? true : false}
@@ -376,6 +378,7 @@ export default function Profile({ navigation }) {
                                 leftIcon="phone"
                                 rightIcon="pencil"
                                 value={formData.mobile}
+                                inputTextColor={colors.blueDarkColor}
                                 onTextChange={(mobile) => handleTextChange(mobile, "mobile")}
                                 characterLimit={10}
                                 disabled={!editableFields.mobile}
@@ -398,6 +401,7 @@ export default function Profile({ navigation }) {
                                 initialDate={formData.dob ? convertToDate(formData.dob) : null}
                                 sendDateValue={(dob) => handleTextChange(dob, "dob")}
                                 disableFutureDates={true}
+
                                 disabled={!editableFields.dob}
                                 error={errors.dob !== "" ? true : false}
                                 errorText={errors.dob}
