@@ -17,6 +17,7 @@ import { colors } from '../../constants/colors';
 import Tts from 'react-native-tts';
 import VideoPlayer from '../VideoPlayer/VideoPlayer';
 import AssistantSelector from '../AssistantSelector/AssistantSelector';
+import { FEMALE_ASSISTANT, MALE_ASSISTANT } from '../../constants/images';
 
 export const Conversation = React.memo(({ navigation }) => {
 
@@ -514,7 +515,7 @@ export const Conversation = React.memo(({ navigation }) => {
                                         style={styles.assistantImageContainer}
                                     >
                                         <Image
-                                            source={require('@/assets/images/male_assistant.png')}
+                                            source={MALE_ASSISTANT}
                                             style={styles.assistantImage}
                                         />
                                     </View>
@@ -532,7 +533,7 @@ export const Conversation = React.memo(({ navigation }) => {
                                         style={styles.assistantImageContainer}
                                     >
                                         <Image
-                                            source={require('@/assets/images/female_assistant.png')}
+                                            source={FEMALE_ASSISTANT}
                                             style={styles.assistantImage}
                                         />
                                     </View>

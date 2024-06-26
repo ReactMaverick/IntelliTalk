@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { Image, TouchableOpacity, View, StyleSheet, TouchableWithoutFeedback } from 'react-native';
 import Animated, { useSharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated';
 import { styles } from './Style';
+import { FEMALE_ASSISTANT, MALE_ASSISTANT } from '../../constants/images';
 
 export default function AssistantSelector({
     containerStyle = {},
@@ -63,7 +64,7 @@ export default function AssistantSelector({
             <TouchableWithoutFeedback onPress={toggleAnimation}>
                 <View style={styles.button}>
                     <Image
-                        source={assistant === 'John' ? require('@/assets/images/male_assistant.png') : require('@/assets/images/female_assistant.png')}
+                        source={assistant === 'John' ? MALE_ASSISTANT : FEMALE_ASSISTANT}
                         style={styles.assistantImage}
                     />
                 </View>
@@ -77,7 +78,7 @@ export default function AssistantSelector({
                     }
                 }>
                     <Image
-                        source={assistant === 'Jenny' ? require('@/assets/images/male_assistant.png') : require('@/assets/images/female_assistant.png')}
+                        source={assistant === 'Jenny' ? MALE_ASSISTANT : FEMALE_ASSISTANT}
                         style={styles.assistantImage}
                     />
                 </TouchableOpacity>
