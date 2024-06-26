@@ -8,6 +8,7 @@ import { useDispatch } from "react-redux";
 import { register } from "@/redux/reducers/authReducer";
 import Loader from "@/components/Loader/Loader";
 import { showToast } from "@/constants/constants";
+import { colors } from "@/constants/colors";
 
 export default function Register({ navigation }) {
 
@@ -172,6 +173,7 @@ export default function Register({ navigation }) {
                             error={errors.name !== ''}
                             errorText={errors.name}
                             leftIcon='user'
+                            inputContainerBackgroundColor={colors.lightGray}
                         />
                         <FormInput
                             labelText="Email"
@@ -186,6 +188,7 @@ export default function Register({ navigation }) {
                             }}
                             error={errors.email !== "" ? true : false}
                             errorText={errors.email}
+                            inputContainerBackgroundColor={colors.lightGray}
                         />
 
                         <FormInput
@@ -206,6 +209,7 @@ export default function Register({ navigation }) {
                             error={errors.mobile !== ''}
                             errorText={errors.mobile}
                             leftIcon='phone'
+                            inputContainerBackgroundColor={colors.lightGray}
                         />
 
                         <FormInput
@@ -232,6 +236,7 @@ export default function Register({ navigation }) {
 
                                 resetErrors();
                             }}
+                            inputContainerBackgroundColor={colors.lightGray}
                         />
 
                         <FormInput
@@ -252,6 +257,7 @@ export default function Register({ navigation }) {
                             rightIconOnPress={() => {
                                 setIsPasswordVisible(!isPasswordVisible);
                             }}
+                            inputContainerBackgroundColor={colors.lightGray}
                         />
 
                         <FormInput
@@ -275,6 +281,7 @@ export default function Register({ navigation }) {
                             rightIconOnPress={() => {
                                 setIsConfirmPasswordVisible(!isConfirmPasswordVisible);
                             }}
+                            inputContainerBackgroundColor={colors.lightGray}
                         />
 
                         <TouchableOpacity

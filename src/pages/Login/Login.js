@@ -79,7 +79,7 @@ export default function Login({ navigation }) {
 
                     } else {
                         // console.log('Error');
-                        // showToast('error', res.payload);
+                        showToast('error', res.payload);
                     }
 
                 })
@@ -133,6 +133,7 @@ export default function Login({ navigation }) {
                             }}
                             error={errors.email !== "" ? true : false}
                             errorText={errors.email}
+                            inputContainerBackgroundColor={colors.lightGray}
                         />
 
                         <FormInput
@@ -153,6 +154,7 @@ export default function Login({ navigation }) {
                             rightIconOnPress={() => {
                                 setIsPasswordVisible(!isPasswordVisible);
                             }}
+                            inputContainerBackgroundColor={colors.lightGray}
                         />
 
                         <TouchableOpacity
