@@ -1,7 +1,7 @@
 import { PermissionsAndroid } from "react-native";
 import { platform } from "../constants/constants";
 
-export const OPENAI_API_KEY = 'sk-proj-nmeD0RshHjELZSkMdyycT3BlbkFJKZDV9YlornORUPopPgXF';
+// export const OPENAI_API_KEY = 'sk-proj-nmeD0RshHjELZSkMdyycT3BlbkFJKZDV9YlornORUPopPgXF';
 
 export const requestCameraPermission = async () => {
     if (platform === 'android') {

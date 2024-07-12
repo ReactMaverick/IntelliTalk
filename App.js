@@ -8,7 +8,8 @@ import Router from './src/routes/Router';
 import { NavigationContainer } from '@react-navigation/native';
 import { SpeechRecognitionRootView } from 'react-native-voicebox-speech-rec';
 import { PaperProvider } from 'react-native-paper';
-import { LogBox } from 'react-native';
+import { Alert, LogBox } from 'react-native';
+import NetInfo from '@react-native-community/netinfo';
 
 LogBox.ignoreLogs(['new NativeEventEmitter']); // Ignore log notification by message
 
@@ -20,8 +21,15 @@ export default function App() {
       SplashScreen.hide();
     }, 3000);
 
+    const unsubscribe = NetInfo.addEventListener(state => {
+      if (!state.isConnected) {
+        Alert.alert('No Internet Connection', 'Please check your internet connection and try again.');
+      }
+    });
+
     return () => {
       clearTimeout(splashTimeout);
+      unsubscribe();
     };
 
   }, []);

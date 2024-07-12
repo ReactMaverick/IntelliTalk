@@ -124,6 +124,7 @@ export const verifyOTP = createAsyncThunk('auth/verifyOTP', async (data, { rejec
 const initialState = {
   user: null,
   token: null,
+  openAIKey: null, // OpenAI API Key
   isLoggedIn: false,
   next: null,
 };
@@ -137,6 +138,7 @@ const authSlice = createSlice({
       state.token = null;
       state.isLoggedIn = false;
       state.next = null;
+      state.openAIKey = null;
     },
   },
 
@@ -163,6 +165,7 @@ const authSlice = createSlice({
     builder.addCase(login.fulfilled, (state, action) => {
       state.user = action.payload.user;
       state.token = action.payload.token;
+      state.openAIKey = action.payload.openAIKey;
       state.next = action.payload.next;
       if (action.payload.token) {
         state.isLoggedIn = true;
@@ -207,6 +210,7 @@ const authSlice = createSlice({
 
 export const selectUser = state => state.authReducer.user;
 export const selectToken = state => state.authReducer.token;
+export const selectOpenAIKey = state => state.authReducer.openAIKey;
 export const selectNext = state => state.authReducer.next;
 export const { logout } = authSlice.actions;
 export const isLoggedIn = state => state.authReducer.isLoggedIn;

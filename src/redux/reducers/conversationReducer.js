@@ -3,12 +3,11 @@ import { postData, postFormData } from '@/values/api/apiprovider';
 import { LOGIN_URL, REGISTER_URL } from '@/values/api/url';
 import { showToast } from '@/constants/constants';
 import { CHAT_WITH_AI_URL } from '../../values/api/url';
-import { OPENAI_API_KEY } from '../../common/common';
 
 export const chatWithAI = createAsyncThunk('conversation/chatWithAI', async (data, { rejectWithValue }) => {
   try {
 
-    const { messages, userMessage, assistant } = data;
+    const { messages, userMessage, assistant, openAIKey } = data;
 
     // console.log('Messages in async thunk ==> ', messages);
 
@@ -18,7 +17,7 @@ export const chatWithAI = createAsyncThunk('conversation/chatWithAI', async (dat
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${OPENAI_API_KEY}`
+        'Authorization': `Bearer ${openAIKey}`
       },
       body: JSON.stringify({
         model: 'gpt-3.5-turbo',

@@ -18,10 +18,13 @@ import Tts from 'react-native-tts';
 import VideoPlayer from '../VideoPlayer/VideoPlayer';
 import AssistantSelector from '../AssistantSelector/AssistantSelector';
 import { FEMALE_ASSISTANT, MALE_ASSISTANT } from '../../constants/images';
+import { selectOpenAIKey, selectUser } from '../../redux/reducers/authReducer';
 
 export const Conversation = React.memo(({ navigation }) => {
 
     const dispatch = useDispatch();
+
+    const openAIKey = useSelector(selectOpenAIKey);
 
     const assistant = useSelector(selectAssistant);
 
@@ -230,7 +233,8 @@ export const Conversation = React.memo(({ navigation }) => {
                                     role: 'user',
                                     content: trimmedMessage
                                 },
-                                assistant
+                                assistant,
+                                openAIKey
                             }))
                                 .then((response) => {
                                     // console.log("Logic", response.type === 'conversation/chatWithAI/fulfilled');
@@ -266,7 +270,8 @@ export const Conversation = React.memo(({ navigation }) => {
                                     role: 'user',
                                     content: trimmedMessage
                                 },
-                                assistant
+                                assistant,
+                                openAIKey
                             }))
                                 .then((response) => {
                                     // console.log("Logic", response.type === 'conversation/chatWithAI/fulfilled');
