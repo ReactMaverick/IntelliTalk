@@ -1,12 +1,12 @@
 import { StyleSheet } from "react-native";
 import { colors } from "../../constants/colors";
-import { deviceHeight } from "../../constants/constants";
+import { deviceHeight, deviceTheme } from "../../constants/constants";
 import { H1, H2, H6, p } from "../../constants/fontConstants";
 
 export const styles = StyleSheet.create({
     container: {
         alignItems: 'center',
-        backgroundColor: colors.BGBlueColor,
+        backgroundColor: deviceTheme === 'dark' ? colors.blueDarkColor : colors.BGBlueColor,
         height: '100%',
         width: '100%',
         paddingHorizontal: 20,
@@ -28,7 +28,6 @@ export const styles = StyleSheet.create({
         maxHeight: '10%',
         width: '80%',
         paddingTop: 30,
-        // backgroundColor: 'red',
     },
     chatArea: {
         flex: 1,
@@ -54,6 +53,7 @@ export const styles = StyleSheet.create({
         fontWeight: 'bold',
         marginRight: 5,
         textTransform: 'capitalize',
+        color: colors.blueDarkColor,
     },
     gradient: {
         position: 'absolute',
@@ -67,6 +67,7 @@ export const styles = StyleSheet.create({
         top: 5,
         left: 5,
         height: 50,
+        zIndex: 1,
     },
     closeDrawerButton: {
         backgroundColor: colors.inputShadow,
@@ -105,7 +106,7 @@ export const styles = StyleSheet.create({
     selectAssistantHeaderText: {
         fontSize: H1,
         fontWeight: 'bold',
-        color: colors.blueDarkColor,
+        color: deviceTheme === 'dark' ? colors.screenBg : colors.blueDarkColor,
     },
     assistantButton: {
         // backgroundColor: colors.inputShadow,
@@ -135,7 +136,7 @@ export const styles = StyleSheet.create({
     },
     assistantText: {
         fontSize: p,
-        color: colors.blueDarkColor,
+        color: deviceTheme === 'dark' ? colors.screenBg : colors.blueDarkColor,
     },
     assistantSelectorContainer: {
         position: 'absolute',

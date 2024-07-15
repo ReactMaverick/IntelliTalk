@@ -23,7 +23,7 @@ export const register = createAsyncThunk('auth/register', async (data, { rejectW
 
     const response = await postFormData(REGISTER_URL, formData);
 
-    console.log('response in async thunk', response);
+    // console.log('response in async thunk', response);
 
     if (!response.isSuccess) {
       // console.log('response.message', response.message);
@@ -67,7 +67,7 @@ export const login = createAsyncThunk('auth/login', async (data, { rejectWithVal
 export const updateProfile = createAsyncThunk('auth/updateProfile', async (data, { rejectWithValue, dispatch }) => {
   try {
 
-    console.log('Profile update data in async thunk ==> ', data);
+    // console.log('Profile update data in async thunk ==> ', data);
 
     const { name, email, mobile, dob, image, token, userId } = data;
 
@@ -81,7 +81,7 @@ export const updateProfile = createAsyncThunk('auth/updateProfile', async (data,
 
     const response = await postFormData(UPDATE_USER_URL(userId), formData, token);
 
-    console.log('profile update response in async thunk', response);
+    // console.log('profile update response in async thunk', response);
 
     if (response.isSuccess) {
       showToast('success', response.message);
@@ -163,6 +163,7 @@ const authSlice = createSlice({
     });
 
     builder.addCase(login.fulfilled, (state, action) => {
+      // console.log('action.payload fulfilled ==> ', action.payload);
       state.user = action.payload.user;
       state.token = action.payload.token;
       state.openAIKey = action.payload.openAIKey;
@@ -179,7 +180,7 @@ const authSlice = createSlice({
       state.next = null;
     });
     builder.addCase(verifyOTP.fulfilled, (state, action) => {
-      console.log('action.payload fulfilled ==> ', action.payload);
+      // console.log('action.payload fulfilled ==> ', action.payload);
       state.user = action.payload.user;
       state.next = action.payload.next;
       if (action.payload.token) {
@@ -187,7 +188,7 @@ const authSlice = createSlice({
       }
     });
     builder.addCase(verifyOTP.rejected, (state, action) => {
-      console.log('action.payload rejected ==> ', action.payload);
+      // console.log('action.payload rejected ==> ', action.payload);
       state.next = action.payload.data.next;
     });
 

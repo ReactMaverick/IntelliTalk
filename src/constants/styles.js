@@ -1,7 +1,8 @@
 import { colors } from "@/constants/colors";
 import { deviceHeight, deviceWidth } from "@/constants/constants";
 import { H3, H5, p } from "@/constants/fontConstants";
-import { StyleSheet } from "react-native";
+import { Appearance, StyleSheet } from "react-native";
+import { deviceTheme } from "./constants";
 
 export const commonStyles = StyleSheet.create({
   container: {
@@ -23,7 +24,7 @@ export const commonStyles = StyleSheet.create({
     lineHeight: 32,
   },
   bg: {
-    backgroundColor: colors.screenBg,
+    backgroundColor: deviceTheme === 'dark' ? colors.blueDarkColor : colors.screenBg,
   },
   keyboardAvoidingView: {
     flex: 1,

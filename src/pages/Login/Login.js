@@ -134,6 +134,7 @@ export default function Login({ navigation }) {
                             error={errors.email !== "" ? true : false}
                             errorText={errors.email}
                             inputContainerBackgroundColor={colors.lightGray}
+                            autoCapitalize="none"
                         />
 
                         <FormInput

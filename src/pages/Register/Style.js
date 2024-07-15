@@ -1,6 +1,7 @@
 import { StyleSheet } from "react-native";
 import { H1, p, deviceHeight } from "@/constants/fontConstants";
 import { colors } from "@/constants/colors";
+import { deviceTheme } from "../../constants/constants";
 
 export const styles = StyleSheet.create({
     container: {
@@ -14,7 +15,7 @@ export const styles = StyleSheet.create({
     title: {
         fontSize: H1,
         fontWeight: '600',
-        color: colors.blueDarkColor,
+        color: deviceTheme === 'dark' ? colors.screenBg : colors.blueDarkColor,
     },
     button: {
         backgroundColor: colors.primary,
@@ -30,7 +31,7 @@ export const styles = StyleSheet.create({
     registerLink: {
         marginTop: 20,
         fontSize: p,
-        color: colors.blueDarkColor,
+        color: deviceTheme === 'dark' ? colors.screenBg : colors.blueDarkColor,
     },
     link: {
         color: colors.primary,

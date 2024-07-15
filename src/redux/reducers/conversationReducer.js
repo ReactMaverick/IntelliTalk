@@ -9,6 +9,8 @@ export const chatWithAI = createAsyncThunk('conversation/chatWithAI', async (dat
 
     const { messages, userMessage, assistant, openAIKey } = data;
 
+    // console.log("Date == > ", data);
+
     // console.log('Messages in async thunk ==> ', messages);
 
     // console.log('User Message in async thunk ==> ', userMessage);
@@ -40,6 +42,7 @@ export const chatWithAI = createAsyncThunk('conversation/chatWithAI', async (dat
     // );
 
     // console.log('response in async thunk ==> ', response);
+
 
     if (!response.ok) {
       return rejectWithValue('Failed to chat with AI');

@@ -19,6 +19,7 @@ import VideoPlayer from '../VideoPlayer/VideoPlayer';
 import AssistantSelector from '../AssistantSelector/AssistantSelector';
 import { FEMALE_ASSISTANT, MALE_ASSISTANT } from '../../constants/images';
 import { selectOpenAIKey, selectUser } from '../../redux/reducers/authReducer';
+import { useIsFocused } from '@react-navigation/native';
 
 export const Conversation = React.memo(({ navigation }) => {
 
@@ -27,6 +28,12 @@ export const Conversation = React.memo(({ navigation }) => {
     const openAIKey = useSelector(selectOpenAIKey);
 
     const assistant = useSelector(selectAssistant);
+
+    const isFocused = useIsFocused();
+
+    // console.log('Is Focused ==> ', isFocused);
+
+    // console.log('Assistant ==> ', assistant);
 
     // console.log('Assistant ==> ', assistant);
 
@@ -102,7 +109,7 @@ export const Conversation = React.memo(({ navigation }) => {
     const initTts = async () => {
         const voices = await Tts.voices();
 
-        console.log('Voices ==> ', voices);
+        // console.log('Voices ==> ', voices);
 
         const availableVoices = voices
             ?.filter((voice) => !voice.networkConnectionRequired && !voice.notInstalled)
@@ -110,11 +117,11 @@ export const Conversation = React.memo(({ navigation }) => {
                 return { id: voice.id, name: voice.name, language: voice.language };
             });
 
-        console.log('Available Voices ==> ', availableVoices);
+        // console.log('Available Voices ==> ', availableVoices);
 
         const availableEnglishVoices = availableVoices?.filter((voice) => voice.language.startsWith('en'));
 
-        console.log('Available English Voices ==> ', availableEnglishVoices);
+        // console.log('Available English Voices ==> ', availableEnglishVoices);
 
         let selectedVoice = null;
 
@@ -300,6 +307,16 @@ export const Conversation = React.memo(({ navigation }) => {
         });
     }, [setSpeechRecCompletedHandler, assistant, messages]);
 
+    useEffect(() => {
+        if (!isFocused || assistant) {
+            // Stop speech recognition and TTS when the screen is not focused or assistant is changed
+            stopSpeechRecognition();
+            Tts.stop();
+        }
+        // console.log('Is Focused ==> ', isFocused);
+        // console.log('Assistant ==> ', assistant);
+    }, [isFocused, assistant]);
+
     /** ********************************************************
      * Handle asking for speech recognition permission
      ******************************************************** */
@@ -397,161 +414,158 @@ export const Conversation = React.memo(({ navigation }) => {
     });
 
     return (
-        <TouchableWithoutFeedback
-            onPress={() => {
-                console.log('isAssistantSelectorVisible ==> ', isAssistantSelectorVisible);
+        <SafeAreaView style={styles.container}
+            onTouchStart={() => {
                 if (isAssistantSelectorVisible) {
                     setIsAssistantSelectorVisible(false);
                 }
             }}
         >
-            <SafeAreaView style={styles.container}>
-                <>
-                    {/* Drawer Close Icon */}
-                    <View
-                        style={styles.closeDrawer}
+            <>
+                {/* Drawer Close Icon */}
+                <View
+                    style={styles.closeDrawer}
+                >
+                    <TouchableOpacity
+                        onPress={() => {
+                            setIsAssistantSelectorVisible(false);
+                            navigation.toggleDrawer();
+                        }}
+                        style={styles.closeDrawerButton}
                     >
-                        <TouchableOpacity
-                            onPress={() => {
-                                setIsAssistantSelectorVisible(false);
-                                navigation.toggleDrawer();
-                            }}
-                            style={styles.closeDrawerButton}
-                        >
-                            <Icon
-                                name="menu"
-                                type='MaterialIcons'
-                                style={styles.closeDrawerIcon}
-                            />
-                        </TouchableOpacity>
-                    </View>
-                    {/* Drawer Close Icon */}
-
-                    {/* Assistant Selector Button */}
-                    {assistant &&
-                        <AssistantSelector
-                            containerStyle={styles.assistantSelectorContainer}
-                            assistant={assistant}
-                            setAssistant={setAssistant}
-                            dispatch={dispatch}
-                            assistantSelectorVisible={isAssistantSelectorVisible}
-                            setAssistantSelectorVisible={setIsAssistantSelectorVisible}
+                        <Icon
+                            name="menu"
+                            type='MaterialIcons'
+                            style={styles.closeDrawerIcon}
                         />
-                    }
-                    {/* Assistant Selector Button */}
+                    </TouchableOpacity>
+                </View>
+                {/* Drawer Close Icon */}
 
-                    {assistant
-                        ?
-                        <>
-                            <ScrollView
-                                ref={scrollRef}
-                                onContentSizeChange={handleTextAreaSizeChange}
-                                style={styles.recognizedTextArea}
-                            >
-                                {speechRecContentArea}
-                            </ScrollView>
+                {/* Assistant Selector Button */}
+                {assistant &&
+                    <AssistantSelector
+                        containerStyle={styles.assistantSelectorContainer}
+                        assistant={assistant}
+                        setAssistant={setAssistant}
+                        dispatch={dispatch}
+                        assistantSelectorVisible={isAssistantSelectorVisible}
+                        setAssistantSelectorVisible={setIsAssistantSelectorVisible}
+                    />
+                }
+                {/* Assistant Selector Button */}
 
-                            {/* Video Player */}
-                            <View style={styles.videoPlayerContainer}>
-                                <VideoPlayer
-                                    videoPlayerStyle={styles.videoPlayerStyle}
-                                    playVideo={getTtsStatus('playVideo')}
-                                    pauseVideo={getTtsStatus('pauseVideo')}
-                                    assistant={assistant}
-                                />
-                            </View>
-                            {/* Video Player */}
+                {assistant
+                    ?
+                    <>
+                        <ScrollView
+                            ref={scrollRef}
+                            onContentSizeChange={handleTextAreaSizeChange}
+                            style={styles.recognizedTextArea}
+                        >
+                            {speechRecContentArea}
+                        </ScrollView>
 
-                            <ScrollView
-                                ref={conversationScrollRef}
-                                style={styles.chatArea}
-                                onContentSizeChange={handleConversationSizeChange}
-                                showsVerticalScrollIndicator={false}
-                            >
-                                {conversations?.map((message, index) => (
-                                    <View key={index} style={[styles.chatBubble,
-                                    { alignSelf: message.role === 'user' ? 'flex-end' : 'flex-start' }
-                                    ]}>
-                                        <Text style={styles.chatMessage}>
-                                            <Text style={styles.chatUser}>{message.role === 'user' ? 'You' : assistant}:</Text> {message.content}
-                                        </Text>
-                                    </View>
-                                ))}
-                            </ScrollView>
-
-                            <LinearGradient
-                                colors={['transparent', 'rgba(0, 0, 0, 0.7)']}
-                                style={styles.gradient}
+                        {/* Video Player */}
+                        <View style={styles.videoPlayerContainer}>
+                            <VideoPlayer
+                                videoPlayerStyle={styles.videoPlayerStyle}
+                                playVideo={getTtsStatus('playVideo')}
+                                pauseVideo={getTtsStatus('pauseVideo')}
+                                assistant={assistant}
                             />
-
-                            <MicrophoneButton
-                                containerStyle={styles.micContainer}
-                                disabled={false}
-                                handleButtonPressed={handleConversationButtonPressed}
-                                handleButtonReleased={handleConversationButtonReleased}
-                                handleButtonSwipeUp={handleConversationButtonSwipedUp}
-                                isInListeningMode={isInConversationMode}
-                                tooltipText={
-                                    <MicrophoneButtonTooltip
-                                        userIsSpeaking={isInConversationMode}
-                                        userMicPermissionBlocked={userMicPermissionGranted === false}
-                                    />
-                                }
-                            />
-                        </> :
-                        // Select Assistant
-                        <View style={styles.selectAssistantContainer}>
-                            <Text
-                                style={styles.selectAssistantHeaderText}
-                            >
-                                Select Your Assistant
-                            </Text>
-
-                            <View
-                                style={styles.assistantButtonContainer}
-                            >
-                                <TouchableOpacity
-                                    onPress={() => {
-                                        dispatch(setAssistant('John'));
-                                    }}
-                                    style={styles.assistantButton}
-                                >
-                                    <View
-                                        style={styles.assistantImageContainer}
-                                    >
-                                        <Image
-                                            source={MALE_ASSISTANT}
-                                            style={styles.assistantImage}
-                                        />
-                                    </View>
-                                    <Text
-                                        style={styles.assistantText}
-                                    >John</Text>
-                                </TouchableOpacity>
-                                <TouchableOpacity
-                                    onPress={() => {
-                                        dispatch(setAssistant('Jenny'));
-                                    }}
-                                    style={styles.assistantButton}
-                                >
-                                    <View
-                                        style={styles.assistantImageContainer}
-                                    >
-                                        <Image
-                                            source={FEMALE_ASSISTANT}
-                                            style={styles.assistantImage}
-                                        />
-                                    </View>
-                                    <Text
-                                        style={styles.assistantText}
-                                    >Jenny</Text>
-                                </TouchableOpacity>
-                            </View>
                         </View>
-                    }
-                </>
-            </SafeAreaView>
-        </TouchableWithoutFeedback>
+                        {/* Video Player */}
+
+                        <ScrollView
+                            ref={conversationScrollRef}
+                            style={styles.chatArea}
+                            onContentSizeChange={handleConversationSizeChange}
+                            showsVerticalScrollIndicator={false}
+                        >
+                            {conversations?.map((message, index) => (
+                                <View key={index} style={[styles.chatBubble,
+                                { alignSelf: message.role === 'user' ? 'flex-end' : 'flex-start' }
+                                ]}>
+                                    <Text style={styles.chatMessage}>
+                                        <Text style={styles.chatUser}>{message.role === 'user' ? 'You' : assistant}:</Text> {message.content}
+                                    </Text>
+                                </View>
+                            ))}
+                        </ScrollView>
+
+                        <LinearGradient
+                            colors={['transparent', 'rgba(0, 0, 0, 0.7)']}
+                            style={styles.gradient}
+                        />
+
+                        <MicrophoneButton
+                            containerStyle={styles.micContainer}
+                            disabled={false}
+                            handleButtonPressed={handleConversationButtonPressed}
+                            handleButtonReleased={handleConversationButtonReleased}
+                            handleButtonSwipeUp={handleConversationButtonSwipedUp}
+                            isInListeningMode={isInConversationMode}
+                            tooltipText={
+                                <MicrophoneButtonTooltip
+                                    userIsSpeaking={isInConversationMode}
+                                    userMicPermissionBlocked={userMicPermissionGranted === false}
+                                />
+                            }
+                        />
+                    </> :
+                    // Select Assistant
+                    <View style={styles.selectAssistantContainer}>
+                        <Text
+                            style={styles.selectAssistantHeaderText}
+                        >
+                            Select Your Assistant
+                        </Text>
+
+                        <View
+                            style={styles.assistantButtonContainer}
+                        >
+                            <TouchableOpacity
+                                onPress={() => {
+                                    dispatch(setAssistant('John'));
+                                }}
+                                style={styles.assistantButton}
+                            >
+                                <View
+                                    style={styles.assistantImageContainer}
+                                >
+                                    <Image
+                                        source={MALE_ASSISTANT}
+                                        style={styles.assistantImage}
+                                    />
+                                </View>
+                                <Text
+                                    style={styles.assistantText}
+                                >John</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                                onPress={() => {
+                                    dispatch(setAssistant('Jenny'));
+                                }}
+                                style={styles.assistantButton}
+                            >
+                                <View
+                                    style={styles.assistantImageContainer}
+                                >
+                                    <Image
+                                        source={FEMALE_ASSISTANT}
+                                        style={styles.assistantImage}
+                                    />
+                                </View>
+                                <Text
+                                    style={styles.assistantText}
+                                >Jenny</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+                }
+            </>
+        </SafeAreaView>
     );
 });
 

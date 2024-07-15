@@ -2,7 +2,7 @@ import { ActivityIndicator, Image, KeyboardAvoidingView, SafeAreaView, ScrollVie
 import { styles } from "./Style";
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { commonStyles } from "../../constants/styles";
-import { platform, showToast } from "../../constants/constants";
+import { deviceTheme, platform, showToast } from "../../constants/constants";
 import { FormInput } from "react-native-formtastic";
 import { useDispatch, useSelector } from "react-redux";
 import { selectToken, selectUser, updateProfile } from "../../redux/reducers/authReducer";
@@ -236,6 +236,7 @@ export default function Profile({ navigation }) {
                 >
                     <TouchableOpacity
                         onPress={() => {
+                            // console.log('navigation ==> ', navigation);
                             navigation.toggleDrawer();
                         }}
                         style={styles.closeDrawerButton}
@@ -301,7 +302,7 @@ export default function Profile({ navigation }) {
                             <ActionSheet
                                 ref={actionSheetRef}
                                 containerStyle={{
-                                    backgroundColor: colors.BGColor,
+                                    backgroundColor: deviceTheme === 'dark' ? colors.blueDarkColor : colors.BGColor,
                                 }}>
                                 <TouchableOpacity
                                     onPress={handleOpenCamera}
@@ -401,7 +402,6 @@ export default function Profile({ navigation }) {
                                 initialDate={formData.dob ? convertToDate(formData.dob) : null}
                                 sendDateValue={(dob) => handleTextChange(dob, "dob")}
                                 disableFutureDates={true}
-
                                 disabled={!editableFields.dob}
                                 error={errors.dob !== "" ? true : false}
                                 errorText={errors.dob}

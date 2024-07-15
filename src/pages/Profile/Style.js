@@ -1,11 +1,12 @@
 import { StyleSheet } from "react-native";
 import { colors } from "@/constants/colors";
 import { H1 } from "@/constants/fontConstants";
+import { deviceTheme } from "../../constants/constants";
 
 export const styles = StyleSheet.create({
     container: {
         alignItems: 'center',
-        backgroundColor: colors.BGBlueColor,
+        backgroundColor: deviceTheme === 'dark' ? colors.blueDarkColor : colors.BGBlueColor,
         height: '100%',
         width: '100%',
         paddingHorizontal: 20,
@@ -16,6 +17,7 @@ export const styles = StyleSheet.create({
         top: 5,
         left: 5,
         height: 50,
+        zIndex: 1,
     },
     closeDrawerButton: {
         backgroundColor: colors.inputShadow,
@@ -38,7 +40,7 @@ export const styles = StyleSheet.create({
     scrollView: {
         width: '100%',
         height: '100%',
-        // backgroundColor: 'red'
+        // backgroundColor: 'blue',
     },
     updateImgBox: {
         position: 'relative',
@@ -89,7 +91,7 @@ export const styles = StyleSheet.create({
     },
     updateBtn: {
         paddingVertical: 15,
-        backgroundColor: colors.blueDarkColor,
+        backgroundColor: deviceTheme === 'dark' ? colors.primary : colors.blueDarkColor,
         justifyContent: 'center',
         alignItems: 'center',
         borderRadius: 10,
