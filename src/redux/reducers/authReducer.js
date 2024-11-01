@@ -124,7 +124,8 @@ export const verifyOTP = createAsyncThunk('auth/verifyOTP', async (data, { rejec
 const initialState = {
   user: null,
   token: null,
-  openAIKey: null, // OpenAI API Key
+  // openAIKey: null, // OpenAI API Key
+  openAIKey: 'sk-proj-RCruIKFRu4BURpdY2IwZT3BlbkFJJDVAxhSpEelKtx3V2ZXb', // OpenAI API Key
   isLoggedIn: false,
   next: null,
 };

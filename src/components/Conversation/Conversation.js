@@ -423,7 +423,7 @@ export const Conversation = React.memo(({ navigation }) => {
         >
             <>
                 {/* Drawer Close Icon */}
-                <View
+                {/* <View
                     style={styles.closeDrawer}
                 >
                     <TouchableOpacity
@@ -439,7 +439,7 @@ export const Conversation = React.memo(({ navigation }) => {
                             style={styles.closeDrawerIcon}
                         />
                     </TouchableOpacity>
-                </View>
+                </View> */}
                 {/* Drawer Close Icon */}
 
                 {/* Assistant Selector Button */}

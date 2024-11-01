@@ -26,180 +26,180 @@ const Tab = createBottomTabNavigator();
 
 const Drawer = createDrawerNavigator();
 
-function MyDrawer() {
-    return (
+// function MyDrawer() {
+//     return (
 
-        <Drawer.Navigator
-            screenOptions={{
-                headerShown: false,
-                drawerType: 'front',
-                drawerStyle: {
-                    width: '65%'
-                },
-            }}
-            drawerContent={props => <CustomDrawerContent {...props} />}>
-            <Drawer.Screen name="Home" component={Home} />
-            <Drawer.Screen name="Profile" component={Profile} />
-        </Drawer.Navigator>
-    );
-}
+//         <Drawer.Navigator
+//             screenOptions={{
+//                 headerShown: false,
+//                 drawerType: 'front',
+//                 drawerStyle: {
+//                     width: '65%'
+//                 },
+//             }}
+//             drawerContent={props => <CustomDrawerContent {...props} />}>
+//             <Drawer.Screen name="Home" component={Home} />
+//             <Drawer.Screen name="Profile" component={Profile} />
+//         </Drawer.Navigator>
+//     );
+// }
 
-const CustomDrawerContent = props => {
+// const CustomDrawerContent = props => {
 
-    const user = useSelector(selectUser);
+//     const user = useSelector(selectUser);
 
-    const dispatch = useDispatch();
+//     const dispatch = useDispatch();
 
-    // console.log('user in router drawer component ==> ', user);
+//     // console.log('user in router drawer component ==> ', user);
 
-    return (
-        <DrawerContentScrollView {...props}
-            contentContainerStyle={{
-                flex: 1,
-                justifyContent: 'center',
-                paddingTop: 0,
-            }}
-        >
-            {/* <ImageBackground source={require('../assets/images/navMenu.png')} style={{
-                flex: 1,
-                height: hp('100%')
-            }}
-            > */}
-            <LinearGradient
-                colors={['#4c669f', '#3b5998', '#192f6a']}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 0 }}
-                style={styles.gradientOverlay}
-            >
+//     return (
+//         <DrawerContentScrollView {...props}
+//             contentContainerStyle={{
+//                 flex: 1,
+//                 justifyContent: 'center',
+//                 paddingTop: 0,
+//             }}
+//         >
+//             {/* <ImageBackground source={require('../assets/images/navMenu.png')} style={{
+//                 flex: 1,
+//                 height: hp('100%')
+//             }}
+//             > */}
+//             <LinearGradient
+//                 colors={['#4c669f', '#3b5998', '#192f6a']}
+//                 start={{ x: 0, y: 0 }}
+//                 end={{ x: 1, y: 0 }}
+//                 style={styles.gradientOverlay}
+//             >
 
-                <View style={{ alignItems: "flex-start", paddingHorizontal: wp("5%") }}>
-                    <TouchableOpacity
-                        style={styles.avatarContainer}
-                        onPress={() => {
-                            props.navigation.navigate('Profile');
-                            props.navigation.closeDrawer();
-                        }}
-                    >
-                        <Image
-                            source={user?.image ? { uri: IMAGE_BASE_URL + user.image } : PROFILE_AVATAR}
-                            style={styles.avatarStyle}
-                        />
-                        <Text style={styles.textStyle}>{user?.name ?? ''}</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                        onPress={() => {
-                            props.navigation.navigate('Home');
-                            props.navigation.closeDrawer();
-                        }}
-                    >
-                        <View style={styles.drawerMenu}>
-                            <Icon name="home" type='SimpleLineIcons' style={styles.drawerIcon} />
-                            <Text style={styles.drawerMenuText}>Home</Text>
-                        </View>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                        onPress={() => {
-                            props.navigation.navigate('Profile');
-                            props.navigation.closeDrawer();
-                        }}
-                    >
-                        <View style={styles.drawerMenu}>
-                            <Icon name="person" type='SimpleLineIcons' style={styles.drawerIcon} />
-                            <Text style={styles.drawerMenuText}>Profile</Text>
-                        </View>
-                    </TouchableOpacity>
+//                 <View style={{ alignItems: "flex-start", paddingHorizontal: wp("5%") }}>
+//                     <TouchableOpacity
+//                         style={styles.avatarContainer}
+//                         onPress={() => {
+//                             props.navigation.navigate('Profile');
+//                             props.navigation.closeDrawer();
+//                         }}
+//                     >
+//                         <Image
+//                             source={user?.image ? { uri: IMAGE_BASE_URL + user.image } : PROFILE_AVATAR}
+//                             style={styles.avatarStyle}
+//                         />
+//                         <Text style={styles.textStyle}>{user?.name ?? ''}</Text>
+//                     </TouchableOpacity>
+//                     <TouchableOpacity
+//                         onPress={() => {
+//                             props.navigation.navigate('Home');
+//                             props.navigation.closeDrawer();
+//                         }}
+//                     >
+//                         <View style={styles.drawerMenu}>
+//                             <Icon name="home" type='SimpleLineIcons' style={styles.drawerIcon} />
+//                             <Text style={styles.drawerMenuText}>Home</Text>
+//                         </View>
+//                     </TouchableOpacity>
+//                     <TouchableOpacity
+//                         onPress={() => {
+//                             props.navigation.navigate('Profile');
+//                             props.navigation.closeDrawer();
+//                         }}
+//                     >
+//                         <View style={styles.drawerMenu}>
+//                             <Icon name="person" type='SimpleLineIcons' style={styles.drawerIcon} />
+//                             <Text style={styles.drawerMenuText}>Profile</Text>
+//                         </View>
+//                     </TouchableOpacity>
 
-                    <TouchableOpacity
-                        onPress={() => {
-                            props.navigation.closeDrawer();
-                            dispatch(logout());
-                        }}
-                    >
-                        <View style={styles.drawerMenu}>
-                            <Icon name="exit" type='SimpleLineIcons' style={styles.drawerIcon} />
-                            <Text style={styles.drawerMenuText}>Log Out</Text>
-                        </View>
-                    </TouchableOpacity>
-                </View>
-            </LinearGradient>
-            {/* </ImageBackground> */}
-        </DrawerContentScrollView>
-    );
-};
+//                     <TouchableOpacity
+//                         onPress={() => {
+//                             props.navigation.closeDrawer();
+//                             dispatch(logout());
+//                         }}
+//                     >
+//                         <View style={styles.drawerMenu}>
+//                             <Icon name="exit" type='SimpleLineIcons' style={styles.drawerIcon} />
+//                             <Text style={styles.drawerMenuText}>Log Out</Text>
+//                         </View>
+//                     </TouchableOpacity>
+//                 </View>
+//             </LinearGradient>
+//             {/* </ImageBackground> */}
+//         </DrawerContentScrollView>
+//     );
+// };
 
-function HomeTabs() {
+// function HomeTabs() {
 
-    const customScreenOptions = ({ route }) => ({
-        tabBarIcon: ({ focused, color, size }) => {
-            let iconName;
+//     const customScreenOptions = ({ route }) => ({
+//         tabBarIcon: ({ focused, color, size }) => {
+//             let iconName;
 
-            if (route.name === 'HomeTab') {
-                iconName = focused ? 'home' : 'home-outline';
-            } else if (route.name === 'Profile') {
-                iconName = focused ? 'person' : 'person-outline';
-            }
+//             if (route.name === 'HomeTab') {
+//                 iconName = focused ? 'home' : 'home-outline';
+//             } else if (route.name === 'Profile') {
+//                 iconName = focused ? 'person' : 'person-outline';
+//             }
 
-            return <Icon name={iconName} size={size} color={color} />;
-        },
-    })
+//             return <Icon name={iconName} size={size} color={color} />;
+//         },
+//     })
 
 
-    return (
-        <Tab.Navigator
-            screenOptions={customScreenOptions}
-        >
-            <Tab.Screen
-                name="HomeTab"
-                component={Home}
-                options={{
-                    headerShown: false,
-                }}
-            />
-            <Tab.Screen
-                name="Profile"
-                component={Profile}
-                options={{
-                    headerShown: false,
-                }}
-            />
-        </Tab.Navigator>
-    );
-}
+//     return (
+//         <Tab.Navigator
+//             screenOptions={customScreenOptions}
+//         >
+//             <Tab.Screen
+//                 name="HomeTab"
+//                 component={Home}
+//                 options={{
+//                     headerShown: false,
+//                 }}
+//             />
+//             <Tab.Screen
+//                 name="Profile"
+//                 component={Profile}
+//                 options={{
+//                     headerShown: false,
+//                 }}
+//             />
+//         </Tab.Navigator>
+//     );
+// }
 
-const LoginStack = () => {
-    return (
-        <Stack.Navigator>
-            <Stack.Screen
-                name="Login"
-                component={Login}
-                options={{
-                    headerShown: false,
-                }}
-            />
-            <Stack.Screen
-                name="Register"
-                component={Register}
-                options={{
-                    headerShown: false,
-                }}
-            />
-            <Stack.Screen
-                name="VerifyOTP"
-                component={VerifyOTP}
-                options={{
-                    headerShown: false,
-                }}
-            />
-        </Stack.Navigator>
-    );
-}
+// const LoginStack = () => {
+//     return (
+//         <Stack.Navigator>
+//             <Stack.Screen
+//                 name="Login"
+//                 component={Login}
+//                 options={{
+//                     headerShown: false,
+//                 }}
+//             />
+//             <Stack.Screen
+//                 name="Register"
+//                 component={Register}
+//                 options={{
+//                     headerShown: false,
+//                 }}
+//             />
+//             <Stack.Screen
+//                 name="VerifyOTP"
+//                 component={VerifyOTP}
+//                 options={{
+//                     headerShown: false,
+//                 }}
+//             />
+//         </Stack.Navigator>
+//     );
+// }
 
 const HomeStack = () => {
     return (
         <Stack.Navigator>
             <Stack.Screen
                 name="HomePage"
-                component={MyDrawer}
+                component={Home}
                 options={{
                     headerShown: false,
                 }}
@@ -209,15 +209,15 @@ const HomeStack = () => {
 }
 
 export default function Router() {
-    const isUserLoggedIn = useSelector(isLoggedIn);
+    // const isUserLoggedIn = useSelector(isLoggedIn);
 
-    console.log('isLoggedIn ==> ', isUserLoggedIn);
+    // console.log('isLoggedIn ==> ', isUserLoggedIn);
 
-    if (isUserLoggedIn) {
-        return <HomeStack />;
-    } else {
-        return <LoginStack />;
-    }
+    // if (isUserLoggedIn) {
+    return <HomeStack />;
+    // } else {
+    //     return <LoginStack />;
+    // }
 }
 
 
