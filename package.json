@@ -9,7 +9,8 @@
     "start": "react-native start",
     "test": "jest",
     "debug-build": "cd android && gradlew assembleDebug",
-    "release-build": "cd android && gradlew assembleRelease"
+    "release-build": "cd android && gradlew assembleRelease",
+    "build-android": "react-native build-android --mode=release"
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "^1.23.1",
