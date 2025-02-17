@@ -37,6 +37,8 @@ export const Conversation = React.memo(({ navigation }) => {
 
     // console.log('Assistant ==> ', assistant);
 
+    // console.log('OpenAI Key ==> ', openAIKey);
+    
     const conversations = useSelector(state => selectConversation(state, assistant));
 
     const messages = useSelector(state => selectMessages(state, assistant));

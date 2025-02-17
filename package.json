@@ -23,6 +23,7 @@
     "react": "18.2.0",
     "react-native": "0.74.2",
     "react-native-actions-sheet": "^0.9.3",
+    "react-native-dotenv": "^3.4.11",
     "react-native-formtastic": "^1.7.0",
     "react-native-gesture-handler": "^2.16.2",
     "react-native-image-crop-picker": "^0.41.1",

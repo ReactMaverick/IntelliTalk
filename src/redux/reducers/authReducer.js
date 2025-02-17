@@ -125,7 +125,7 @@ const initialState = {
   user: null,
   token: null,
   // openAIKey: null, // OpenAI API Key
-  openAIKey: 'sk-proj-RCruIKFRu4BURpdY2IwZT3BlbkFJJDVAxhSpEelKtx3V2ZXb', // OpenAI API Key
+  openAIKey: process.env.OPENAI_KEY, // OpenAI API Key
   isLoggedIn: false,
   next: null,
 };
