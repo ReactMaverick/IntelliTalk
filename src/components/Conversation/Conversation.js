@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useRef, useEffect, useMemo } from 'react';
-import { ScrollView, Alert, View, TouchableOpacity, Image, TouchableWithoutFeedback } from 'react-native';
+import { ScrollView, Alert, View, TouchableOpacity, Image } from 'react-native';
 import { RESULTS } from 'react-native-permissions';
 import { Text } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialIcons';

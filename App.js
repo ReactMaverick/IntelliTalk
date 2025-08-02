@@ -10,6 +10,7 @@ import { Alert, LogBox } from 'react-native';
 import NetInfo from '@react-native-community/netinfo';
 import { PersistGate } from 'redux-persist/integration/react';
 import { SpeechRecognitionRootView } from 'react-native-voicebox-speech-rec';
+import { KeyboardProvider } from 'react-native-keyboard-controller';
 
 LogBox.ignoreLogs(['new NativeEventEmitter']); // Ignore log notification by message
 
@@ -40,7 +41,9 @@ export default function App() {
         <NavigationContainer>
           <PaperProvider>
             <SpeechRecognitionRootView>
-              <Router />
+              <KeyboardProvider>
+                <Router />
+              </KeyboardProvider>
             </SpeechRecognitionRootView>
           </PaperProvider>
         </NavigationContainer>
