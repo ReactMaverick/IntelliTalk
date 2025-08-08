@@ -482,6 +482,7 @@ export const Conversation = React.memo(({ navigation }) => {
                         <ScrollView
                             ref={conversationScrollRef}
                             style={styles.chatArea}
+                            contentContainerStyle={styles.chatContentContainer}
                             onContentSizeChange={handleConversationSizeChange}
                             showsVerticalScrollIndicator={false}
                         >

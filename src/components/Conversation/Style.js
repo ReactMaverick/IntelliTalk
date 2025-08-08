@@ -1,6 +1,6 @@
 import { StyleSheet } from "react-native";
 import { colors } from "../../constants/colors";
-import { deviceHeight, deviceTheme } from "../../constants/constants";
+import { deviceHeight, deviceTheme, deviceWidth } from "../../constants/constants";
 import { H1, H2, H6, p } from "../../constants/fontConstants";
 
 export const styles = StyleSheet.create({
@@ -28,6 +28,10 @@ export const styles = StyleSheet.create({
         maxHeight: '10%',
         width: '80%',
         paddingTop: 30,
+    },
+    chatContentContainer: {
+        // backgroundColor: 'red',
+        paddingBottom: 40
     },
     chatArea: {
         flex: 1,
